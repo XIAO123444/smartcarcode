@@ -7,11 +7,11 @@
 #include "photo_chuli.h"
 #include "math.h"
 #include "track.h"
-int16 centerline[MT9V03X_H];
-int16 leftline[MT9V03X_H];
-int16 rightline[MT9V03X_H];
-int16 rightfollowline[MT9V03X_H];
-int16 leftfollowline[MT9V03X_H];
+int16 centerline[MT9V03X_H];            //图象中线可以删去
+int16 leftline[MT9V03X_H];              //左边界
+int16 rightline[MT9V03X_H];             //右边界
+int16 rightfollowline[MT9V03X_H];       //右跟踪线
+int16 leftfollowline[MT9V03X_H];        //左跟踪线
 
 int16 leftlostpoint[2]={0,0};   //左丢线数和左丢线点0为丢线数，1为丢线点
 int16 rightlostpoint[2]={0,0};  //右丢线数和左丢线点0为丢线数，1为丢线点
@@ -89,8 +89,8 @@ void image_boundary_process(void){
     //uint8 col = MT9V03X_W/2;//列
     uint8 start_col = MT9V03X_W / 2;//各行起点的列坐标,默认为MT9V03X_W / 2
     //清零之前的计数
-    leftline_num = 0;
-    rightline_num = 0;
+    leftline_num = 0;           //左线数量置0
+    rightline_num = 0;          //右线数量置0
 
     for(row = MT9V03X_H - 1; row >= 1; row--){
         //选用上一行的中点作为下一行计算起始点，节省速度，同时防止弯道的左右两边均出现与画面一侧
@@ -143,7 +143,8 @@ void image_boundary_process(void){
 使用示例     
 备注信息     
 -------------------------------------------------------------------------------------------------------------------
-*/void difsum_right(uint8 y,uint8 x){
+*/
+void difsum_right(uint8 y,uint8 x){
     float sum,dif,sar;//和，差，比
     uint8 col;//列
     uint8 mov = 3;//每次作差后的移动量,默认为2，可以根据画面分辨率调整

@@ -10,11 +10,11 @@
 #define ips200_y_max 320
 bool start_flag=false;
 int current_state=1;
-int p=0;//记录当前指针
-int p_nearby=0;//记录所属的指针
-int input;
-extern int status;
-extern uint16 w_step,h_step,K,limit;
+int p=0;                            //记录当前指针
+int p_nearby=0;                     //记录所属的指针
+int input;                          //记录按键输入
+extern int status;                      //记录状态
+extern uint16 w_step,h_step,K,limit;    //图象处理相关
 extern bool save_flag;
 int32 speed;
 int32 forwardsight;
