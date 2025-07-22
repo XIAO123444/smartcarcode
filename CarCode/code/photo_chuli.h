@@ -19,21 +19,21 @@ int16 montonicity_right(uint8 start,uint8 end);
 int16 continuity_right(uint8 start,uint8 end);
 
 //十字
-void Find_Down_Point(int16 start,int16 end);
-void Find_Up_Point(int16 start,int16 end);
+void Find_Down_Point(int16 start,int16 end);                    //寻找下点
+void Find_Up_Point(int16 start,int16 end);                      //寻找上点  
 
-void draw_Lline_k(int16 startx, int16 starty, int16 endy, float dx);
-void draw_Rline_k(int16 startx, int16 starty, int16 endy, float dx);
+void draw_Lline_k(int16 startx, int16 starty, int16 endy, float dx);        //画左边界线
+void draw_Rline_k(int16 startx, int16 starty, int16 endy, float dx);        //画右边界线
 
-void add_Rline_k(int16 startx, int16 starty, int16 endy,int16 endx);
-void add_Lline_k(int16 startx, int16 starty, int16 endy,int16 endx);
+void add_Rline_k(int16 startx, int16 starty, int16 endy,int16 endx);        //添加右边界线
+void add_Lline_k(int16 startx, int16 starty, int16 endy,int16 endx);        //添加左边界线
 
-void lenthen_Left_bondarise(int16 start);
-void lenthen_Right_bondarise(int16 start);
+void lenthen_Left_bondarise(int16 start);                   //延长左边界线
+void lenthen_Right_bondarise(int16 start);                  //延长右边界线
 
-void banmaxian_check(void);
-void black_protect_check(void);
+void banmaxian_check(void);                         //斑马线保护
+void black_protect_check(void);                         //黑线保护
 
-int16 output_middle(void);
+int16 output_middle(void);                          //输出中线
 
 #endif
