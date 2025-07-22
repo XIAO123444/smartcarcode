@@ -8,13 +8,16 @@
 #include "photo_chuli.h"
 #include "buzzer.h"
 //白列锁定
-int16 bailie_lock_crossroad=MT9V03X_W/2;
-int16 bailieright_lock_round=3*MT9V03X_W/4;
+int16 bailie_lock_crossroad=MT9V03X_W/2;        //白列锁定到中间
+int16 bailieright_lock_round=3*MT9V03X_W/4;     //白列锁定到右边
 // 外部变量声明
-extern int32 forwardsight;
+extern int32 forwardsight;              // 前视距离
+
+
 extern int16 centerline[MT9V03X_H];      // 中心线数组（图像高度维度）
 extern int16 leftline[MT9V03X_H];       // 左边界线数组 
 extern int16 rightline[MT9V03X_H];      // 右边界线数组
+
 extern int16 rightfollowline[MT9V03X_H]; // 右边界跟踪线
 extern int16 leftfollowline[MT9V03X_H];  // 左边界跟踪线
 extern uint8 pix_per_meter;             // 像素/米比例系数
@@ -24,6 +27,11 @@ extern int16 leftlostpoint[2];   //左丢线数和左丢线点0为丢线数，1为丢线点
 extern int16 rightlostpoint[2];  //右丢线数和左丢线点0为丢线数，1为丢线点
 extern int16 bothlostpoint[2];   //同时丢线数和左丢线点0为丢线数，1为丢线
 
+extern uint16 left_lost_flag[MT9V03X_H];//左丢线数组
+extern uint16 right_lost_flag[MT9V03X_H];//右丢线数组
+extern uint16 both_lost_flag[MT9V03X_H];//同时丢线数组
+
+
 // 边界点检测结果
 extern int16 Right_Down_Find;  // 右下边界点行号
 extern int16 Left_Down_Find;   // 左下边界点行号
@@ -31,8 +39,8 @@ extern int16 Right_Up_Find;    // 右上边界点行号
 extern int16 Left_Up_Find;     // 左上边界点行号
 
 // 圆环标志
-extern int16 right_budandiao;
-float right_dxbudandiao;
+extern int16 right_budandiao;   //右边界不单调点
+float right_dxbudandiao;        //右边界不单调点斜率
 
 extern uint8 leftline_num;         //左线点数量
 extern uint8 rightline_num;        //右线点数量

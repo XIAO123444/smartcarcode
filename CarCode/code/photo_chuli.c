@@ -13,20 +13,27 @@ int16 rightline[MT9V03X_H];             //右边界
 int16 rightfollowline[MT9V03X_H];       //右跟踪线
 int16 leftfollowline[MT9V03X_H];        //左跟踪线
 
-int16 leftlostpoint[2]={0,0};   //左丢线数和左丢线点0为丢线数，1为丢线点
+int16 leftlostpoint[2]={0,0};   //左丢线数和左丢线点0为丢线数，1为丢线点(由下往上)
 int16 rightlostpoint[2]={0,0};  //右丢线数和左丢线点0为丢线数，1为丢线点
 int16 bothlostpoint[2]={0,0};   //同时丢线数和左丢线点0为丢线数，1为丢线点
+
+int16 longest_white_line_L[2]; //最长白线左,0为长度，1为起始点
+int16 startpointL;           //左边界起始点
+int16 endpointL;             //左边界终点
+int16 longest_white_line_R[2]; //最长白线右,0为长度，1为起始点
+int16 startpointR;           //有边界起始点           
+int16 endpointR;             //右边界终点
+
+int16 search_stop;          //搜索终止点
 
 uint16 left_lost_flag[MT9V03X_H];//左丢线数组
 uint16 right_lost_flag[MT9V03X_H];//右丢线数组
 uint16 both_lost_flag[MT9V03X_H];//同时丢线数组
-
 //十字↓↓↓↓
 int16 Right_Down_Find=0;    //右下点
 int16 Left_Down_Find=0;     //左下点
 int16 Right_Up_Find=0;      //右上点
 int16 Left_Up_Find=0;       //左上点
-//十字↑↑↑↑
 //车状态
 enum mark {
     straight,    // 直道行驶
@@ -118,7 +125,8 @@ void image_boundary_process(void){
 使用示例     
 备注信息     
 -------------------------------------------------------------------------------------------------------------------
-*/void difsum_left(uint8 y,uint8 x){
+*/
+void difsum_left(uint8 y,uint8 x){
     float sum,dif,sar;//和，差，比
     uint8 col;//列
     uint8 mov = 3;//每次作差后的移动量,默认为2，可以根据画面分辨率调整
@@ -161,7 +169,6 @@ void difsum_right(uint8 y,uint8 x){
         }
     }
 }
-
 
 //这里都是差比和↑↑↑↑↑↑↑
 
@@ -296,8 +303,7 @@ void difsum_right1(uint8 y,uint8 x)
 		else
 		{
 			rightlostpoint[0]++;
-			right_lost_flag[y]=1;
-
+			right_lost_flag[y]=1; 
 			if(rightlostpoint[1]==0)
 			{
 				rightlostpoint[1]=y;
@@ -307,15 +313,60 @@ void difsum_right1(uint8 y,uint8 x)
 	}
 }
 void image_boundary_process2(void)
-	{
+{
     uint8 row;//行
-    //uint8 col = MT9V03X_W/2;//列
     uint8 start_col = MT9V03X_W / 2;//各行起点的列坐标,默认为MT9V03X_W / 2
     //清零之前的计数
     leftline_num = 0;
     rightline_num = 0;
+    longest_white_line_L[0]=0;      //最长白列初始化
+    longest_white_line_L[1]=0;
+    longest_white_line_R[0]=0;
+    longest_white_line_R[1]=0;
+    startpointL=0;           //左最长白列起始点
+    startpointR=0;           //右最长白列起始点   
+    int startpoint=10;                  //扫描起始点
+    int endpoint=MT9V03X_W-10;          //扫描终点
+    for(int16 i=0;i<MT9V03X_H-1;i++)
+    {
+        leftline[i]=0;
+        rightline[i]=MT9V03X_W-1;
+        left_lost_flag[i]   = 0;
+        right_lost_flag[i]  = 0;  
+    }
 
-    for(row = MT9V03X_H - 1; row >= 1; row--){
+    uint8 white_count[MT9V03X_W]={0};       //每列白色像素点计数
+    for(int16 j=startpoint;j<endpoint;j++)
+    {
+        for(int16 i=MT9V03X_H-1;i>=0;i--)
+        {
+            if(dis_image[i][j]>1)
+            {
+                white_count[j]++;           //白色像素点计数
+            }
+        }
+    }
+    //寻找左最长白列
+    for(int16 j=startpoint;j<endpoint;j++)
+    {
+        if(white_count[j]>longest_white_line_L[0])//如果当前列白色像素点大于最长白列
+        {
+            longest_white_line_L[0]=white_count[j];
+            longest_white_line_L[1]=j;          //更新最长白列起始点
+        }
+    }
+    //寻找右最长白列
+    for(int16 j=endpoint;j>startpoint;j--)
+    {
+        if(white_count[j]>longest_white_line_R[0])//如果当前列白色像素点大于最长白列
+        {
+            longest_white_line_R[0]=white_count[j];
+            longest_white_line_R[1]=j;          //更新最长白列起始点
+        }
+    }
+    search_stop =(longest_white_line_L[0]< longest_white_line_R[0])?longest_white_line_L[1]:longest_white_line_R[1];//搜索终止点靠视野消失点，因此是小的在前面 
+    for(row = MT9V03X_H - 1; row >= search_stop; row--)
+    {
         //选用上一行的中点作为下一行计算起始点，节省速度，同时防止弯道的左右两边均出现与画面一侧
         if(row != MT9V03X_H - 1){
             
@@ -332,7 +383,7 @@ void image_boundary_process2(void)
                 }
                 else
                 {
-                    start_col = centerline[row+1];//一阶低通滤波，防止出现噪点影响下一行的起始点
+                    start_col = centerline[row+1];
                 }
             }
             else if(carstatus_now==crossroad)
@@ -352,7 +403,7 @@ void image_boundary_process2(void)
             start_col = (uint8)(MT9V03X_W / 2);
         }
 
-        //逐行作差比和 
+        //逐行做黑白 
         difsum_left1(row,start_col);
         difsum_right1(row,start_col); 
 		for(int16 i=MT9V03X_H-3;i>3;i--)
@@ -367,7 +418,6 @@ void image_boundary_process2(void)
 				}
 			}
 		}
-        centerline[row] = 0.5 * (rightline[row] + leftline[row]);
     }
 }
 
@@ -859,6 +909,14 @@ void draw_Lline_k(int16 startx, int16 starty, int16 endy, float dx) {
     for (int16 i = starty; i != endy; i += step) {
 
         int16 temp=startx + (int16)((float)(i - starty) * dx );   
+        if(temp<1)
+        {
+            temp=1;
+        }
+        else if(temp>MT9V03X_W-1)
+        {
+            temp=MT9V03X_W-1;
+        }   
             leftfollowline[i] = temp;
         
     }
@@ -886,7 +944,15 @@ void draw_Rline_k(int16 startx, int16 starty, int16 endy, float dx) {
         return;
     }
     for (int16 i = starty; i != endy; i += step) {
-        int16 temp=startx + (int16)((float)(i - starty) * dx );      
+        int16 temp=startx + (int16)((float)(i - starty) * dx );
+        if(temp<1)
+        {
+            temp=1;
+        }
+        else if(temp>MT9V03X_W-1)
+        {
+            temp=MT9V03X_W-1;
+        }      
         rightfollowline[i] = temp;
     }
 }
