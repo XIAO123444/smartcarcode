@@ -31,3 +31,7 @@ mpu*
 tz*
 *.s
 *.json
+CarCode/mdk/.clangd
+*.iex
+*.log
+*.scvd

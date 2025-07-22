@@ -85,7 +85,8 @@ extern int current_state;
 extern int speed; 
 extern int forwardsight;
 extern int encodercounter1;
-
+extern int image_threshold;
+extern uint8 dis_image[MT9V03X_H][MT9V03X_W];
 void all_init(void)
 {
     clock_init(SYSTEM_CLOCK_120M);//必须最先开启时钟
@@ -171,7 +172,32 @@ int main (void)
         Menu_control();         //菜单控制
         flash_save();           //flash闪存
 		BUZZ_cycle();           //蜂鸣器循环
-        
+        if(mt9v03x_finish_flag)
+        { 
+            image_threshold=my_adapt_threshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);//图像获取阈值
+             set_b_imagine(image_threshold);
+            image_boundary_process2();
+            if(current_state==1)
+            {
+                
+                 ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //图像处理可注释掉
+                element_check();
+                show_line(); 
+            }                                                                   
+			if( encodercounter1>7000)
+			{	
+				banmaxian_check();//斑马线
+			}
+            black_protect_check();//出界保护
+            if(stop_flag1)
+            {
+            pit_disable(TIM6_PIT);
+            motor_run(0,0 );//右电机，左电机
+
+            }
+            mt9v03x_finish_flag = 0;
+            
+        } 
 
     }
         

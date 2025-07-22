@@ -221,32 +221,7 @@ void TIM6_IRQHandler (void)
 void TIM7_IRQHandler (void)
 {
     // 此处编写用户代码
-    if(mt9v03x_finish_flag)
-        { 
-            image_threshold=my_adapt_threshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);//图像获取阈值
-             set_b_imagine(image_threshold);
-            image_boundary_process2();
-            if(current_state==1)
-            {
-                
-                 ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //图像处理可注释掉
-                element_check();
-                show_line(); 
-            }                                                                   
-			if( encodercounter1>7000)
-			{	
-				banmaxian_check();//斑马线
-			}
-            black_protect_check();//出界保护
-            if(stop_flag1)
-            {
-            pit_disable(TIM6_PIT);
-            motor_run(0,0 );//右电机，左电机
 
-            }
-            mt9v03x_finish_flag = 0;
-            
-        } 
     // 此处编写用户代码
     TIM7->SR &= ~TIM7->SR;                                                      // 清空中断状态
 }
