@@ -176,7 +176,7 @@ printf("bothpointlast%d",bothlostpoint[0]);
         centerline2_change();
 
         // 突变点全部失效时返回直道状态
-        if((Right_Up_Find == 0 && Left_Up_Find == 0)||(rightline_num>50||leftline_num>50)||(rightline_num<10||leftline_num<10)) {
+        if(Right_Up_Find == 0 && Left_Up_Find == 0) {
             carstatus_now = straight;
             return;
         }
