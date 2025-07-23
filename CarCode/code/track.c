@@ -82,7 +82,7 @@ void centerline2_change(void) {
 
 
 void element_check(void) {    
-    ips200_show_int(0,280,carstatus_now,1);
+//    ips200_show_int(0,280,carstatus_now,1);
     // ¸üÐÂ×óÓÒ¸ú×ÙÏß 
     memcpy(leftfollowline, leftline, sizeof(leftline));
     memcpy(rightfollowline, rightline, sizeof(rightline));

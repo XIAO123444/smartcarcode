@@ -17,13 +17,12 @@ int16 leftlostpoint[2]={0,0};   //左丢线数和左丢线点0为丢线数，1为丢线点
 int16 rightlostpoint[2]={0,0};  //右丢线数和左丢线点0为丢线数，1为丢线点
 int16 bothlostpoint[2]={0,0};   //同时丢线数和左丢线点0为丢线数，1为丢线点
 
-int16white_point_count[MT9V03X_W]={0}; //每列白点计数
-int16 left_longest[2]={0,0};  //左最长白列数和左最长白列点0为丢线数，1为丢线点
-int16 right_longest[2]={0,0};  //右最长白列数和左最长白列点0为丢线数，1为丢线点
+int16 white_point_count[MT9V03X_W]={0}; //每列白点计数
+int16 left_longest[2]={0,0};  //左最长白列数和左最长白列点0长度，1为W索引
+int16 right_longest[2]={0,0};  //右最长白列数和左最长白列点0长度，1为W索引
 int16 left_start_point=0;  //左起点
 int16 right_start_point=MT9V03X_W-1; //右起点
 
-white_point_count[MT9V03X_W]={0}; //每列白点计数
 int16 search_stop=0; //终止点
 
 uint16 left_lost_flag[MT9V03X_H];//左丢线数组
@@ -323,7 +322,7 @@ void image_boundary_process2(void)
     leftline_num = 0;
     rightline_num = 0;
     //白线计数清零和左右线清零
-    for(int16 i=0;i<MT9V03X_W;i++)
+    for(int16 i=0;i<MT9V03X_H;i++)
     {
         white_point_count[i]=0;
         leftline[i]=0;
@@ -361,62 +360,63 @@ void image_boundary_process2(void)
         }
     }
     search_stop=(right_longest[0]> left_longest[0])?right_longest[0]:left_longest[0]; //由于是从屏幕下往上，所以是选大的
+    printf("search_stop,%d",search_stop);
+    ips200_show_int(0, 280, search_stop, 2);                                            //显示终止点后续可以删掉
+//    for(row = MT9V03X_H - 1; row >= search_stop; row--)
+//    {
+//        
+//        //选用上一行的中点作为下一行计算起始点，节省速度，同时防止弯道的左右两边均出现与画面一侧
+//        // if(row != MT9V03X_H - 1){
+//            
+//            
+//        //     if(carstatus_now==straight)
+//        //     {			
+//        //         if(centerline[row+1]==0)
+//        //         {
+//        //             start_col=(uint8)(MT9V03X_W / 2);
+//        //         }
+//        //         else if(rightline[row+1]!=MT9V03X_W-1&&leftline[row+1]!=0)
+//        //         {
+//        //             start_col=(rightline[row+1]+leftline[row+1])/2;
+//        //         }
+//        //         else
+//        //         {
+//        //             start_col = centerline[row+1];//一阶低通滤波，防止出现噪点影响下一行的起始点
+//        //         }
+//        //     }
+//        //     else if(carstatus_now==crossroad)
+//        //     {
+//        //         start_col=bailie_lock_crossroad;
+//              
+//        //     }
+//        //     else if(carstatus_now==round_4)
+//        //     {
+//        //         start_col=90;
+//        //     }
 
-    for(row = MT9V03X_H - 1; row >= search_stop; row--)
-    {
-        
-        //选用上一行的中点作为下一行计算起始点，节省速度，同时防止弯道的左右两边均出现与画面一侧
-        // if(row != MT9V03X_H - 1){
-            
-            
-        //     if(carstatus_now==straight)
-        //     {			
-        //         if(centerline[row+1]==0)
-        //         {
-        //             start_col=(uint8)(MT9V03X_W / 2);
-        //         }
-        //         else if(rightline[row+1]!=MT9V03X_W-1&&leftline[row+1]!=0)
-        //         {
-        //             start_col=(rightline[row+1]+leftline[row+1])/2;
-        //         }
-        //         else
-        //         {
-        //             start_col = centerline[row+1];//一阶低通滤波，防止出现噪点影响下一行的起始点
-        //         }
-        //     }
-        //     else if(carstatus_now==crossroad)
-        //     {
-        //         start_col=bailie_lock_crossroad;
-              
-        //     }
-        //     else if(carstatus_now==round_4)
-        //     {
-        //         start_col=90;
-        //     }
 
-
-            
-		// }
-        // else if(row == MT9V03X_H - 1){
-        //     start_col = (uint8)(MT9V03X_W / 2);
-        // }
-        
-        difsum_left1(row,left_longest[1]); //使用最长白列的起点作为起点
-        difsum_right1(row,right_longest[1]); //使用最长白列的起点作为起点
-		for(int16 i=MT9V03X_H-1;i>search_stop;i--)
-		{
-			if(right_lost_flag[i]==1&&left_lost_flag[i]==1)         //如果左丢线且右丢线
-			{
-				both_lost_flag[i]=1;                                //同时丢线
-				bothlostpoint[0]++;                                 //丢线数加1
-				if(bothlostpoint[1]==0)                             //如果丢线点为0
-				{
-					bothlostpoint[1]=i;                                 //记录丢线点
-				}
-			}
-		}
-        centerline[row] = 0.5 * (rightline[row] + leftline[row]);
-    }
+//            
+//		// }
+//        // else if(row == MT9V03X_H - 1){
+//        //     start_col = (uint8)(MT9V03X_W / 2);
+//        // }
+//        
+//        difsum_left1(row,left_longest[1]); //使用最长白列的起点作为起点
+//        difsum_right1(row,right_longest[1]); //使用最长白列的起点作为起点
+//		for(int16 i=MT9V03X_H-1;i>search_stop;i--)
+//		{
+//			if(right_lost_flag[i]==1&&left_lost_flag[i]==1)         //如果左丢线且右丢线
+//			{
+//				both_lost_flag[i]=1;                                //同时丢线
+//				bothlostpoint[0]++;                                 //丢线数加1
+//				if(bothlostpoint[1]==0)                             //如果丢线点为0
+//				{
+//					bothlostpoint[1]=i;                                 //记录丢线点
+//				}
+//			}
+//		}
+//        centerline[row] = 0.5 * (rightline[row] + leftline[row]);
+//    }
 }
 
 
