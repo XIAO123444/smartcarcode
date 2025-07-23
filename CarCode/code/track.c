@@ -24,6 +24,8 @@ extern int16 leftlostpoint[2];   //左丢线数和左丢线点0为丢线数，1为丢线点
 extern int16 rightlostpoint[2];  //右丢线数和左丢线点0为丢线数，1为丢线点
 extern int16 bothlostpoint[2];   //同时丢线数和左丢线点0为丢线数，1为丢线
 
+extern int16 search_stop; // 终止点
+
 // 边界点检测结果
 extern int16 Right_Down_Find;  // 右下边界点行号
 extern int16 Left_Down_Find;   // 左下边界点行号
@@ -37,7 +39,15 @@ float right_dxbudandiao;
 extern uint8 leftline_num;         //左线点数量
 extern uint8 rightline_num;        //右线点数量
 int16 output_middle2(void) {
-    return centerline2[forwardsight  ];
+    if(search_stop<forwardsight)            //如果终止点小于 前视距离
+    {
+        return centerline2[search_stop  ];
+
+    }
+    else if(search_stop>=forwardsight)
+    {
+        return centerline2[forwardsight  ];
+    }   
 } 
  
 int32 encodercounter=0;
@@ -46,7 +56,7 @@ int32 encodercounter=0;
 enum mark {
     straight,    // 直道行驶
     crossroad,   // 十字路口
-    round_2,   // 入环补直线
+    round_2,   // 入环补直线a
     round_3,   // 圆环补斜线（未使用）
     round_4,   // 入环行驶
     round_5,   // 左拐点补斜线
