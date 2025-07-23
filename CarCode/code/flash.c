@@ -4,8 +4,8 @@
 #include "menu.h"
 
 extern struct pid_v PID_V;
-extern struct steer_pid
- S_PID;
+extern struct steer_pid S_PID;
+extern struct steer_pid S_PID1;
 extern int speed;
 extern int forwardsight;
 
@@ -32,4 +32,12 @@ void flash_init(void)
     speed                  =flash_union_buffer[0].int32_type;
     forwardsight                  =flash_union_buffer[1].int32_type;
 
+    flash_buffer_clear();
+    flash_read_page_to_buffer(101, 0);                            // 将数据从 flash 读取到缓冲区
+    S_PID1.p                =flash_union_buffer[0].float_type;  
+    S_PID1.i                =flash_union_buffer[1].float_type;
+    S_PID1.d                =flash_union_buffer[2].float_type;
+    S_PID1.outputmax        =flash_union_buffer[3].float_type;
+    S_PID1.outputmin        =flash_union_buffer[4].float_type;
+    
 }

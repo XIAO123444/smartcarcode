@@ -276,6 +276,7 @@ void difsum_left1(uint8 y,uint8 x)
 	}
     leftlostpoint[0]++;
     left_lost_flag[y]=1;
+    //何为丢线？在
     if(leftlostpoint[1]==0)
     {
         leftlostpoint[1]=y;
@@ -393,7 +394,7 @@ void image_boundary_process2(void)
     }
     if(search_stop>=MT9V03X_H-1||search_stop<0) //如果最长白列小于10行，说明没有白线
     {
-        return; //没有白线，直接返回
+        return; //没有白线，直接返回 
     }
     else
     {
@@ -406,7 +407,15 @@ void image_boundary_process2(void)
         
         
     }
-    printf("%d,%d\n",leftlostpoint[0],rightlostpoint[0]);
+    for(row = MT9V03X_H - 1; row > search_stop; row--)
+    {
+        if(right_lost_flag[row]==1&&left_lost_flag[row]==1) //同时丢线
+        {
+            bothlostpoint[0]++;
+            bothlostpoint[1]=row;
+            both_lost_flag[row]=1;
+        }
+    }
 }
 
 
@@ -591,7 +600,7 @@ void Find_Up_Point(int16 start,int16 end)
     if(start<=5)//下面5行数据不稳定，不能作为边界点来判断，舍弃
         start=5;
     for(i=start;i<=end;i++)
-    {
+    { 
         if(Left_Up_Find==0&&//只找第一个符合条件的点
            abs(leftline[i]-leftline[i-1])<=5&&
            abs(leftline[i-1]-leftline[i-2])<=5&&

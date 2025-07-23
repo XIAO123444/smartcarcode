@@ -14,12 +14,13 @@
 #include "buzzer.h"
 bool save_flag=false;
 bool stop_flag1;                            //停�?�标志�??
-extern bool start_flag;                     //发车标识�?
+bool start_flag=false;                     //发车标识�?
 
 extern uint8 leftline_num;//左线点数�?
 extern uint8 rightline_num;//右线点数�?
 extern struct pid_v PID_V;                  //pid_V
 extern struct steer_pid S_PID;
+extern struct steer_pid S_PID1;
 extern int current_state;
 extern int speed; 
 extern int forwardsight;
@@ -96,6 +97,17 @@ void flash_save(void)
         flash_erase_page(100,2);
         flash_write_page_from_buffer(100,2);        // 向指�? Flash 扇区的页码写入缓冲区数据
 
+        if (flash_check(101, 0)){flash_erase_page(101, 0);}
+        flash_buffer_clear();
+        flash_union_buffer[0].float_type=S_PID1.p;
+        flash_union_buffer[1].float_type=S_PID1.i;
+        flash_union_buffer[2].float_type=S_PID1.d;
+        flash_union_buffer[3].float_type=S_PID1.outputmax;
+        flash_union_buffer[4].float_type=S_PID1.outputmin;
+        flash_erase_page(101,0);
+        flash_write_page_from_buffer(101,0);        
+        
+
         save_flag=false;
     }
 }
@@ -119,10 +131,10 @@ int main (void)
             {
                 
                  ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //图像处理�?注释�?
-//                element_check();
+                element_check();
                 show_line(); 
             }                                                                   
-			if( encodercounter1>7000)
+			if( encodercounter1>15000)
 			{	
 				banmaxian_check();//�����߼��
 			}

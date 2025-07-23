@@ -8,17 +8,15 @@
 
 #define ips200_x_max 240
 #define ips200_y_max 320
-bool start_flag=false;
+extern bool start_flag;
 int current_state=1;
 int p=0;//记录当前指针
 int p_nearby=0;//记录所属的指针
 int input;
 extern int status;
-extern uint16 w_step,h_step,K,limit;
-extern bool save_flag;
+extern bool save_flag;      //保存标志位
 int32 speed;
 int32 forwardsight;
-
 
 typedef struct 
 {
@@ -36,12 +34,13 @@ typedef struct
 }MENU;
 
 void nfunc(void){
-    ips200_show_string(0,180,"nofunc");
+    ips200_show_string(0,280,"nofunc");
 
 }
 void start_car(void)
 {
     start_flag=true;
+    Encoder_Init();
 }
 void addspeed()
 {
@@ -88,6 +87,12 @@ MENU menu[]={
         {2,"outputmax", ips200_x_max-10 * 7, 80,  0,0,0,    S_PIDsub_outputmax,  S_PIDadd_outputmax,  nfunc},
         {2,"outputmin", ips200_x_max-10 * 7, 100, 0,0,0,    nfunc             ,  nfunc             ,  nfunc},
         {2,"reset_S",     ips200_x_max-10 * 7, 120, 0,0,1,  PID_init, nfunc , nfunc},
+        {2,"P_S1",     ips200_x_max-10 * 7, 140, 0,0,0,    S_PID1sub_p             ,  S_PID1add_p             ,  nfunc},
+        {2,"I_S1",     ips200_x_max-10 * 7, 160, 0,0,0,    S_PID1sub_i             ,  S_PID1add_i             ,  nfunc},
+        {2,"D_S1",     ips200_x_max-10 * 7, 180, 0,0,0,    S_PID1sub_d             ,  S_PID1add_d             ,  nfunc},
+        {2,"outputmax_S1", ips200_x_max-10 * 7, 200, 0,0,0,    S_PID1sub_outputmax             ,  S_PID1add_outputmax             ,  nfunc},
+
+
     {1,"carstatue",0,60,0,0,0,nfunc,nfunc,nfunc},
         {2,"v_left"         ,ips200_x_max-10*7,20,0,0,1,                nfunc,nfunc,nfunc},
         {2,"v_right"        ,ips200_x_max -10*7,40,0,0,1,                nfunc,nfunc,nfunc},
@@ -98,7 +103,7 @@ MENU menu[]={
         {2,"reset_C",     ips200_x_max-10 * 7, 140, 0,0,1,  car_init, nfunc , nfunc},
 
 
-    {1,"START_THECAR",0,80,0,0,0,Encoder_Init,nfunc,nfunc},
+    {1,"START_THECAR",0,80,0,0,0,start_car,nfunc,nfunc},
 
 
     {1,"end",0,0,0,0,0}//不可删去
@@ -156,7 +161,9 @@ void update(void)
             }
             struct pid_v *pid_ptr = PID_vget_param();
             struct steer_pid *pid_ptr1 = SPID_vget_param();
+            struct steer_pid *pid_ptr2 = SPID1_vget_param();
 
+            
             
             //PID控制
             if(strcmp(menu[i].str, "p")==0)
@@ -216,6 +223,28 @@ void update(void)
                 menu[i].value_i=forwardsight;
 
             }
+            if (strcmp(menu[i].str, "p_S1"))
+            {
+                menu[i].value_f=pid_ptr2->p;
+            }
+            if (strcmp(menu[i].str, "i_S1"))
+            {
+                menu[i].value_f=    pid_ptr2->i;
+            }
+            if (strcmp(menu[i].str, "d_S1"))
+            {
+                menu[i].value_f=    pid_ptr2->d;
+            }
+            if (strcmp(menu[i].str, "outputmax_S1"))
+            {
+                menu[i].value_i=    pid_ptr2->outputmax;
+            }
+            if (strcmp(menu[i].str, "outputmin_S1"))
+            {
+                menu[i].value_i=-pid_ptr2->outputmax;
+            }
+
+            
 
             
             //图象处理
