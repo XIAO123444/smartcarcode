@@ -270,20 +270,16 @@ void difsum_left1(uint8 y,uint8 x)
 		{
 			leftline[y] = col;
 			leftline_num ++;//左线点计数+
-			break;//找到边界后退出
-		}
-		else
-		{
-			leftlostpoint[0]++;
-			left_lost_flag[y]=1;
-			if(leftlostpoint[1]==0)
-			{
-				leftlostpoint[1]=y;
-				
-			}
+            return;
 		}
 
 	}
+    leftlostpoint[0]++;
+    left_lost_flag[y]=1;
+    if(leftlostpoint[1]==0)
+    {
+        leftlostpoint[1]=y;
+    }
 }
 void difsum_right1(uint8 y,uint8 x)
 {
@@ -297,20 +293,17 @@ void difsum_right1(uint8 y,uint8 x)
 		{
 			rightline[y] = col ;
 			rightline_num ++;//右边线点计数+
-			break;//找到边界后退出
-		}
-		else
-		{
-			rightlostpoint[0]++;
-			right_lost_flag[y]=1;
-
-			if(rightlostpoint[1]==0)
-			{
-				rightlostpoint[1]=y;
-			}
+			return;//找到边界后退出
 		}
 
 	}
+    rightlostpoint[0]++;
+    right_lost_flag[y]=1;
+
+    if(rightlostpoint[1]==0)
+    {
+        rightlostpoint[1]=y;
+    }
 }
 /*
 -------------------------------------------------------------------------------------------------------------------
@@ -326,8 +319,8 @@ void param_init(void)
     leftline_num = 0;
     rightline_num = 0;
         
-    left_longest[0]=0;  //左最长白列清零
-    right_longest[0]=0;     //右最长白列清零
+    left_longest[0]=1;  //左最长白列清零
+    right_longest[0]=1;     //右最长白列清零
     leftlostpoint[0]=0;      //左丢线数清零
     rightlostpoint[0]=0;     //右丢线数清零
     bothlostpoint[0]=0;      //同时丢线数清零
@@ -347,8 +340,7 @@ void param_init(void)
         right_lost_flag[i]=0;     //右丢线清0   
         left_lost_flag[i]=0;      //左丢线清0   
         both_lost_flag[i]=0;      //同时丢线清0
-        centerline[i]=0;
-
+        centerline[i]=0;          //中线清0
     }
     for(int16 i=0;i<MT9V03X_W;i++)
     {
@@ -359,12 +351,11 @@ void param_init(void)
 void image_boundary_process2(void)
 	{
     uint8 row;//行
-    uint8 start_col = MT9V03X_W / 2;//各行起点的列坐标,默认为MT9V03X_W / 2
     param_init();
     //最长白列计数
     for(int16 i=left_start_point;i<right_start_point;i++)
     {
-        for(int16 j=MT9V03X_H-1;j>=0;j--)
+        for(int16 j=MT9V03X_H-1;j>0;j--)
         {
             if(dis_image[j][i]==255)
             {
@@ -381,49 +372,41 @@ void image_boundary_process2(void)
     {
         if(white_point_count[i]>left_longest[0])
         {
-            left_longest[0]=white_point_count[i];           //白点计数从下往上，所以是MT9V03X_H-1-白点计数
+            left_longest[0]=white_point_count[i];           
             left_longest[1]=i;
         }
     }
     for(int16 i=right_start_point;i>left_start_point;i--)       //寻找最长右白列
     {
-        if(white_point_count[i]>right_longest[0])
+        if(white_point_count[i]>right_longest[0]) 
         {
-            right_longest[0]=white_point_count[i];          //白点计数从下往上，所以是MT9V03X_H-1-白点计数
+            right_longest[0]=white_point_count[i];         
             right_longest[1]=i;
         }
     }
-    search_stop=(right_longest[0]> left_longest[0])?MT9V03X_H-1-right_longest[0]:MT9V03X_H-1-right_longest[0]; //由于是从屏幕下往上，所以是选大的
-    printf("search_stop%d\n",search_stop);
-    if(search_stop>=MT9V03X_H-1||search_stop<=0) //如果最长白列小于10行，说明没有白线
+
+
+    search_stop=(right_longest[0]< left_longest[0])?(MT9V03X_H-right_longest[0]-1):(MT9V03X_H-1-left_longest[0]); //由于是从屏幕下往上，所以是选大的
+    if(search_stop==-1)
+    {
+        search_stop=0;//防止越界
+    }
+    if(search_stop>=MT9V03X_H-1||search_stop<0) //如果最长白列小于10行，说明没有白线
     {
         return; //没有白线，直接返回
     }
     else
     {
-        for(row = MT9V03X_H - 1; row >= search_stop; row--)
+        for(row = MT9V03X_H - 1; row > search_stop; row--)
         {
             difsum_left1(row,left_longest[1]); //使用最长白列的起点作为起点寻找左线
             difsum_right1(row,right_longest[1]); //使用最长白列的起点作为起点寻找右线
             centerline[row]=(rightline[row]+leftline[row])/2;		    
-            printf("1");
-        }
-        for(int16 i=MT9V03X_H-1;i>=search_stop;i--)
-        {
-            printf("2");
-            if(right_lost_flag[i]==1&&left_lost_flag[i]==1)         //如果左丢线且右丢线
-            {
-                both_lost_flag[i]=1;                                //同时丢线
-                bothlostpoint[0]++;                                 //丢线数加1
-                if(bothlostpoint[1]==0)                             //如果丢线点为0
-                {
-                    bothlostpoint[1]=i;                                 //记录丢线点
-                }
-            }
-                
         }
         
+        
     }
+    printf("%d,%d\n",leftlostpoint[0],rightlostpoint[0]);
 }
 
 
