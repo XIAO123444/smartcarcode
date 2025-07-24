@@ -48,13 +48,11 @@ int16 output_middle2(void) {
     if(search_stop<forwardsight)            //如果终止点远于 前视距离
     {
         result=centerline2[forwardsight];   
-        printf("center2:%d\n",result);        
         return result;                      
         
     }
 
     result=centerline2[search_stop];
-    printf("center2:%d\n",result);
     return centerline2[search_stop  ];
 } 
  
@@ -111,7 +109,7 @@ void element_check(void) {
        }
 
 
-        if(Left_Up_Find >= 10 && Right_Up_Find >= 10) {
+        if(Left_Up_Find >= 10 && Right_Up_Find >= 10&&bothlostpoint[0]>20) {
         carstatus_now = crossroad;
         BUZZ_START();
             return; 
@@ -126,8 +124,8 @@ void element_check(void) {
 //        // 重新扫描边界突变点（从下往上）
         Find_Up_Point(5, MT9V03X_H-5);
         printf("rightup%d,leftup%d\n",Right_Up_Find,Left_Up_Find);
-//        // 确定扫描起点（取左右突变点的较高位置）
-        Find_Down_Point(MT9V03X_H-4, 5);
+        
+        Find_Down_Point(MT9V03X_H-4, start_down_point);
          printf("rightdown%d,leftdown%d\n",Right_Down_Find,Left_Down_Find);
         //        // 确定下半段边界点（取左右下点
         if(Left_Down_Find <= Left_Up_Find) Left_Down_Find = 0;
@@ -180,9 +178,10 @@ void element_check(void) {
 //    /*---------- 圆环预识别状态处理 ----------*/
     if(carstatus_now == round_1) {
         // 圆环预识别：检测右下拐点和右不单调点
+        right_budandiao=montonicity_right(10, MT9V03X_H-10);
+        ips200_show_int(0,300, right_budandiao, 3);
         if(Right_Down_Find != 0 && right_budandiao > 10) {
             right_dxbudandiao = (float)(rightline[right_budandiao] - rightline[right_down_guai]) / (right_budandiao - right_down_guai);
-            printf("right_dxbudandiao:%f\n", right_dxbudandiao);
             draw_Rline_k(rightline[Right_Down_Find], Right_Down_Find, right_budandiao, right_dxbudandiao);
         }
 //        if(Right_Down_Find==0&&Right_Up_Find>5&&right_budandiao>10) {

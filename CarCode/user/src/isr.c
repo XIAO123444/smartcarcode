@@ -208,24 +208,26 @@ void TIM6_IRQHandler (void)
 	encoder_clear_count(TIM4_ENCODER);
 	encodercounter1+=(encoder2+encoder1);
     turn1=40 *S_PID_CAL();
-    turn2=40 *S_PID1_CAL();
+//    turn2=40 *S_PID1_CAL();
     int dutyl;  //定义左电机占空比
     int dutyr;  //定义右电机占空比
     int outpute =pid_V_comon( speed_stragety );
 
-    if(car_situation==0)
-    {
-        //直道
         dutyl = outpute-turn1;
         dutyr =outpute+turn1;
-    }
-    if(car_situation==1)
-    {
-        //左转
-        dutyl = outpute-turn2;
-        dutyr =outpute+turn2;
-    }
-    
+//    if(car_situation==0)
+//    {
+//        //直道
+//        dutyl = outpute-turn1;
+//        dutyr =outpute+turn1;
+//    }
+//    if(car_situation==1)
+//    {
+//        //左转
+//        dutyl = outpute-turn2;
+//        dutyr =outpute+turn2;
+//    }
+//    
     motor_run(dutyr,dutyl );//鍙?  鐢垫満锛屽乏鐢垫満
     // 姝ゅ?勭紪鍐欑敤鎴蜂唬鐮?
     TIM6->SR &= ~TIM6->SR;                                                      // 娓呯┖涓?鏂?鐘舵�?
