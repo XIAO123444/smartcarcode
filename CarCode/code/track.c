@@ -43,6 +43,10 @@ float right_dxbudandiao;            // 右不单调点斜率
 
 extern uint8 leftline_num;         //左线点数量
 extern uint8 rightline_num;        //右线点数量
+
+
+uint8 crossconfirm=0;
+
 int16 output_middle2(void) {
     int16 result;
     if(search_stop<forwardsight)            //如果终止点远于 前视距离
@@ -86,6 +90,7 @@ void element_check(void) {
     centerline2_change();
     printf("carstatus,%d",carstatus_now);
     printf("search_stop:%d\n", search_stop);
+
     Find_Down_Point(MT9V03X_H-1, search_stop); // 查找下半段边界点
     Find_Up_Point(search_stop, MT9V03X_H-1);   // 查找上半段边界点
     printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
@@ -93,113 +98,109 @@ void element_check(void) {
 
 
 //    /*---------- 直道状态检测 ----------*/
-    if(carstatus_now == straight) {
+   if(carstatus_now == straight) {
 		//圆环↓↓↓↓↓↓↓
 		//圆环↓↓↓↓↓↓↓ 
 		//圆环↓↓↓↓↓↓↓
 		//圆环↓↓↓↓↓↓↓
-       if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
-           && Right_Down_Find!=0&&right_budandiao>10
-           &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
-       &&rightlostpoint[0]<70)  
-       //左连续性，右连续性判断，右下角点找到，右不单调点找到，左线点数大于70，同时丢线数小于10，右丢线点数大于30右丢线点数小于70（可部分删去冗余条件）
+      if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
+          && Right_Down_Find!=0&&right_budandiao>10
+          &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
+      &&rightlostpoint[0]<70)  
+      //左连续性，右连续性判断，右下角点找到，右不单调点找到，左线点数大于70，同时丢线数小于10，右丢线点数大于30右丢线点数小于70（可部分删去冗余条件）
+      {
+          carstatus_now=round_1;
+          return;
+      }
+
+
+       if(Left_Up_Find >= 10 && Right_Up_Find >= 10&&bothlostpoint[0]>10)       //如果左上点和右上点都有效且同时丢线点大于20
        {
-           carstatus_now=round_1;
-           return;
+            crossconfirm++;
+            if(crossconfirm>3) {
+                carstatus_now = crossroad; // 进入十字路口状态
+                crossconfirm = 0; // 重置确认计数
+                printf("crossroad\n");
+            }
        }
+       
 
-
-        if(Left_Up_Find >= 10 && Right_Up_Find >= 10&&bothlostpoint[0]>20) {
-        carstatus_now = crossroad;
-        BUZZ_START();
-            return; 
-        }
-        
-
-   }
+//   }
 
 //    /*---------- 十字路口状态处理 ----------*/
-    if(carstatus_now == crossroad) {
-        int start_down_point=5;
+   if(carstatus_now == crossroad) {
+       int start_down_point=5;
 //        // 重新扫描边界突变点（从下往上）
-        Find_Up_Point(5, MT9V03X_H-5);
-        printf("rightup%d,leftup%d\n",Right_Up_Find,Left_Up_Find);
-        
-        Find_Down_Point(MT9V03X_H-4, start_down_point);
-         printf("rightdown%d,leftdown%d\n",Right_Down_Find,Left_Down_Find);
-        //        // 确定下半段边界点（取左右下点
-        if(Left_Down_Find <= Left_Up_Find) Left_Down_Find = 0;
-        if(Right_Down_Find <= Right_Up_Find) Right_Down_Find = 0;
+       Find_Up_Point(20, MT9V03X_H-5);       
+       Find_Down_Point(MT9V03X_H-4, 20);
+       //        // 确定下半段边界点（取左右下点
+       if(Left_Down_Find <= Left_Up_Find) Left_Down_Find = 0;
+       if(Right_Down_Find <= Right_Up_Find) Right_Down_Find = 0;
 
-        /* 边界线拟合策略 */
-        if(Left_Down_Find != 0 && Right_Down_Find != 0) {
-            // 情况1：左右下点均有效 → 双边界直线拟合
-            add_Rline_k(rightline[Right_Down_Find], Right_Down_Find, 
-                       Right_Up_Find, rightline[Right_Up_Find]);        // 右边界拟合
-            add_Lline_k(leftline[Left_Down_Find], Left_Down_Find,   
-                       Left_Up_Find, leftline[Left_Up_Find]);           // 左边界拟合
-            printf("cross1");
-        }
-        else if(Left_Down_Find == 0 && Right_Down_Find != 0) {
-            // 情况2：仅右下点有效 → 右边界拟合+左边界延长
-            add_Rline_k(rightline[Right_Down_Find], Right_Down_Find,        // 右边界拟合
-                       Right_Up_Find, rightline[Right_Up_Find]);
-            lenthen_Left_bondarise(Left_Up_Find);                       //
-            printf("cross2");
-        }
-        else if(Left_Down_Find != 0 && Right_Down_Find == 0) {
-            // 情况3：仅左下点有效 → 左边界拟合+右边界延长
-            lenthen_Right_bondarise(Right_Up_Find);
-            add_Lline_k(leftline[Left_Down_Find], Left_Down_Find, 
-                       Left_Up_Find, leftline[Left_Up_Find]);
-            printf("cross3");
-        }
-        else {
-            // 情况4：无有效下点 → 双边界延长
-            lenthen_Right_bondarise(Right_Up_Find);
-            lenthen_Left_bondarise(Left_Up_Find);
-            printf("cross4");
-        }
+       /* 边界线拟合策略 */
+       if(Left_Down_Find != 0 && Right_Down_Find != 0) {
+           // 情况1：左右下点均有效 → 双边界直线拟合
+           add_Rline_k(rightline[Right_Down_Find], Right_Down_Find, 
+                      Right_Up_Find, rightline[Right_Up_Find]);        // 右边界拟合
+           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find,   
+                      Left_Up_Find, leftline[Left_Up_Find]);           // 左边界拟合
+           printf("cross1");
+       }
+       else if(Left_Down_Find == 0 && Right_Down_Find != 0) {
+           // 情况2：仅右下点有效 → 右边界拟合+左边界延长
+           add_Rline_k(rightline[Right_Down_Find], Right_Down_Find,        // 右边界拟合
+                      Right_Up_Find, rightline[Right_Up_Find]);
+           lenthen_Left_bondarise(Left_Up_Find);                       //
+           printf("cross2");
+       }
+       else if(Left_Down_Find != 0 && Right_Down_Find == 0) {
+           // 情况3：仅左下点有效 → 左边界拟合+右边界延长
+           lenthen_Right_bondarise(Right_Up_Find);
+           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find, 
+                      Left_Up_Find, leftline[Left_Up_Find]);
+           printf("cross3");
+       }
+       else {
+           // 情况4：无有效下点 → 双边界延长
+           lenthen_Right_bondarise(Right_Up_Find);
+           lenthen_Left_bondarise(Left_Up_Find);
+           printf("cross4");
+       }
 
-        // 异常处理：突变点失效时恢复原始边界
-        if(Right_Up_Find == 0) memcpy(rightfollowline, rightline, sizeof(rightline));
-        if(Left_Up_Find == 0) memcpy(leftfollowline, leftline, sizeof(leftline));
-        centerline2_change();
+       // 异常处理：突变点失效时恢复原始边界
+       if(Right_Up_Find == 0) memcpy(rightfollowline, rightline, sizeof(rightline));
+       if(Left_Up_Find == 0) memcpy(leftfollowline, leftline, sizeof(leftline));
+       centerline2_change();
 
-        // 突变点全部失效时返回直道状态
-        if(Right_Up_Find <= 5 || Left_Up_Find <= 5)//通过上位机检测 
-            {
-            carstatus_now = straight;
-            return;
-        }
-        
-    }
+       // 突变点全部失效时返回直道状态
+       if(Right_Up_Find >= MT9V03X_H-10 || Left_Up_Find >=MT9V03X_H-10||Right_Up_Find<10||Left_Up_Find<10)//通过上位机检测 
+           {
+           carstatus_now = straight;
+           return;
+       }
+       
+   }
 
-//    /*---------- 圆环预识别状态处理 ----------*/
-    if(carstatus_now == round_1) {
-        // 圆环预识别：检测右下拐点和右不单调点
-        right_budandiao=montonicity_right(10, MT9V03X_H-10);
-        ips200_show_int(0,300, right_budandiao, 3);
-        if(Right_Down_Find != 0 && right_budandiao > 10) {
-            right_dxbudandiao = (float)(rightline[right_budandiao] - rightline[right_down_guai]) / (right_budandiao - right_down_guai);
-            draw_Rline_k(rightline[Right_Down_Find], Right_Down_Find, right_budandiao, right_dxbudandiao);
-        }
-//        if(Right_Down_Find==0&&Right_Up_Find>5&&right_budandiao>10) {
-//            // 右下拐点未找到但右上拐点有效，直接进入圆环状态
-//            carstatus_now = round_2;
-//            return;
+////    /*---------- 圆环预识别状态处理 ----------*/
+//    if(carstatus_now == round_1) {
+//        // 圆环预识别：检测右下拐点和右不单调点
+//        right_budandiao=montonicity_right(10, MT9V03X_H-10);
+//        ips200_show_int(0,300, right_budandiao, 3);
+//        if(Right_Down_Find != 0 && right_budandiao > 10) {
+//            right_dxbudandiao = (float)(rightline[right_budandiao] - rightline[right_down_guai]) / (right_budandiao - right_down_guai);
+//            draw_Rline_k(rightline[Right_Down_Find], Right_Down_Find, right_budandiao, right_dxbudandiao);
 //        }
+////        if(Right_Down_Find==0&&Right_Up_Find>5&&right_budandiao>10) {
+////            // 右下拐点未找到但右上拐点有效，直接进入圆环状态
+////            carstatus_now = round_2;
+////            return;
+////        }
 
-    }
-    if(carstatus_now == round_2) {
+//    }
+//    if(carstatus_now == round_2) {
 
-    }
+//    }
     
 }
 
 
-void choose_tracktype(void) 
-{
-    // 待实现功能：根据赛道特征选择跟踪策略
-    // track_type = TRACK_LEFT;
-}

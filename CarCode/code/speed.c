@@ -16,17 +16,17 @@ void Velocity_Control(void)//赛道类型判别，来选定速度
     
     if(start_flag==true)
     {
-        if(error>40||error<-40)
+        if(error>10||error<-10)
         {
             car_situation=1;//弯道
-        }
+        } 
         else
         {
             car_situation=0;
         }
         if(car_situation==0)//直道
         {
-            speed_stragety=speed*1.5;
+            speed_stragety=speed*1;
         }
         if(car_situation==1)
         {
