@@ -521,10 +521,10 @@ void Find_Down_Point(int16 start,int16 end)
         start=end;
         end=t;
     }
-    if(start>=MT9V03X_H-1-5)//下面5行数据不稳定，不能作为边界点来判断，舍弃
-        start=MT9V03X_H-1-5;
-    if(end>=MT9V03X_H-10)
-        end=MT9V03X_H-10;
+    if(start>=MT9V03X_H-1-3)//下面5行数据不稳定，不能作为边界点来判断，舍弃
+        start=MT9V03X_H-1-3;
+    if(end>=MT9V03X_H-5)
+        end=MT9V03X_H-5;
     if(end<=5)
        end=5;
     for(i=start;i>=end;i--)
@@ -562,15 +562,12 @@ void Find_Down_Point(int16 start,int16 end)
             break;
         }
     }
-        if(abs(Right_Down_Find-Left_Down_Find)>=50)//纵向撕裂过大，视为误判
-    {
-        Right_Down_Find=0;
-        Left_Down_Find=0;
-    }
+
 }
- 
+
+
 /*-------------------------------------------------------------------------------------------------------------------
-  @brief     找上面的两个拐点，供十字使用
+  @brief     找上面的两个拐点，供十字使用,从上往下找
   @param     搜索的范围起点，终点
   @return    修改两个全局变量
              Left_Up_Find=0;
@@ -633,13 +630,11 @@ void Find_Up_Point(int16 start,int16 end)
             break;
         }
     }
-    if(abs(Right_Up_Find-Left_Up_Find)>=50)//纵向撕裂过大，视为误判
-    {
-        Right_Up_Find=0;
-        Left_Up_Find=0;
-    }
+
     
 }
+
+
 
 
 /*
@@ -786,7 +781,7 @@ int16 continuity_right(uint8 start,uint8 end)
     }
     for(i=start;i>=end;i--)
     {
-        if(abs(rightline[i]-rightline[i-1])>=7)//连续性阈值是5，可更改
+        if(abs(rightline[i]-rightline[i-1])>=5)//连续性阈值是5，可更改
        {
             continuity_change_flag=i;                                         //在i处不连续了
 
@@ -911,8 +906,10 @@ void draw_Lline_k(int16 startx, int16 starty, int16 endy, float dx) {
     for (int16 i = starty; i != endy; i += step) {
 
         int16 temp=startx + (int16)((float)(i - starty) * dx );   
-            leftfollowline[i] = temp;
-        
+        if(temp<0) temp=0; //防止越界
+        if(temp>MT9V03X_W-1) temp=MT9V03X_W-1; //防止越界
+        leftfollowline[i] = temp;
+
     }
 }
 /*
@@ -938,7 +935,9 @@ void draw_Rline_k(int16 startx, int16 starty, int16 endy, float dx) {
         return;
     }
     for (int16 i = starty; i != endy; i += step) {
-        int16 temp=startx + (int16)((float)(i - starty) * dx );      
+        int16 temp=startx + (int16)((float)(i - starty) * dx );
+        if(temp<0) temp=0; //防止越界
+        if(temp>MT9V03X_W-1) temp=MT9V03X_W-1; //防止越界    
         rightfollowline[i] = temp;
     }
 }
@@ -995,7 +994,7 @@ void add_Lline_k(int16 startx, int16 starty, int16 endy,int16 endx)
 void lenthen_Left_bondarise(int16 start)
 {
     if(start<7){start=7;}
-    if(start>MT9V03X_H-7){start=MT9V03X_H-7;}
+    if(start>MT9V03X_H-1){start=MT9V03X_H-1;}
     float dx=(float)(leftline[start]-leftline[start-7])/7;
     dx1_left_average(dx);
     float dx_average=(dx1[0]+dx1[1]+dx1[2]+dx1[3]+dx1[4])/5;
@@ -1023,7 +1022,7 @@ void lenthen_Left_bondarise(int16 start)
 void lenthen_Right_bondarise(int16 start) 
 {
     if(start<7){start=7;}
-    if(start>MT9V03X_H-7){start=MT9V03X_H-7;}
+    if(start>MT9V03X_H-1){start=MT9V03X_H-1;}
     float dx=(float)(rightline[start]-rightline[start-7])/7;
     dx2_right_average(dx);
     float dx_average=(dx2[0]+dx2[1 ]+dx2[2]+dx2[3]+dx2[4])/5;
@@ -1039,4 +1038,58 @@ void lenthen_Right_bondarise(int16 start)
         }
     }
 }
-   
+    /*
+------------------------------------------------------------------------------------------------------------------
+函数简介     自下而上补左线
+参数说明     起点
+返回参数     无
+使用示例     
+备注信息     
+-------------------------------------------------------------------------------------------------------------------
+*/  
+void shorten_Left_bondarise1(int16 start)
+{
+    if(start<0){start=0;}
+    if(start>MT9V03X_H-8){start=MT9V03X_H-8;}
+    float dx=(float)(leftline[start]-leftline[start+7])/7;
+    dx1_left_average(dx);
+    float dx_average=(dx1[0]+dx1[1]+dx1[2]+dx1[3]+dx1[4])/5;
+    for(int16 i=start;i>0;i--)
+    {
+        if((float)leftline[start]+(float)(dx_average*(start-i))<0||(float)leftline[start]+dx_average*(float)(start-i)>(float)MT9V03X_W)
+        {
+            break;
+        }
+        else
+        {
+            leftfollowline[i]=(int16)((float)leftline[start]+dx_average*(float)(start-i));
+        }
+    }
+}
+/*------------------------------------------------------------------------------------------------------------------
+函数简介     自下而上补右线 
+参数说明     起点
+返回参数     无
+使用示例
+备注信息
+-------------------------------------------------------------------------------------------------------------------
+*/
+void shorten_Right_bondarise1(int16 start)
+{
+    if(start<0){start=0;}
+    if(start>MT9V03X_H-8){start=MT9V03X_H-8;}
+    float dx=(float)(rightline[start]-rightline[start+7])/7;
+    dx2_right_average(dx);
+    float dx_average=(dx2[0]+dx2[1]+dx2[2]+dx2[3]+dx2[4])/5;
+    for(int16 i=start;i>0;i--)
+    {
+        if((float)rightline[start]+(float)(dx_average*(start-i))<0||(float)rightline[start]+dx_average*(float)(start-i)>(float)MT9V03X_W)
+        {
+            break;
+        }
+        else
+        {
+            rightfollowline[i]=(int16)((float)rightline[start]+dx_average*(float)(start-i));
+        }
+    }
+}
