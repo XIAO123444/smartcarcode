@@ -84,20 +84,21 @@ MENU menu[]={
         {2,"p_S",         ips200_x_max-10 * 7, 20,  0,0,1,  S_PIDsub_p,           S_PIDadd_p,          nfunc},  
         {2,"i_S",         ips200_x_max-10 * 7, 40,  0,0,1,  S_PIDsub_i,           S_PIDadd_i,          nfunc},  
         {2,"d_S",         ips200_x_max-10 * 7, 60,  0,0,1,  S_PIDsub_d,           S_PIDadd_d,          nfunc},  
-        {2,"outputmax", ips200_x_max-10 * 7, 80,  0,0,0,    S_PIDsub_outputmax,  S_PIDadd_outputmax,  nfunc},
+        {2,"outputmax", ips200_x_max-10 * 7, 80,  0,0,1,    S_PIDsub_outputmax,  S_PIDadd_outputmax,  nfunc},
         {2,"outputmin", ips200_x_max-10 * 7, 100, 0,0,0,    nfunc             ,  nfunc             ,  nfunc},
         {2,"reset_S",     ips200_x_max-10 * 7, 120, 0,0,1,  PID_init, nfunc , nfunc},
-        {2,"P_S1",     ips200_x_max-10 * 7, 140, 0,0,0,    S_PID1sub_p             ,  S_PID1add_p             ,  nfunc},
-        {2,"I_S1",     ips200_x_max-10 * 7, 160, 0,0,0,    S_PID1sub_i             ,  S_PID1add_i             ,  nfunc},
-        {2,"D_S1",     ips200_x_max-10 * 7, 180, 0,0,0,    S_PID1sub_d             ,  S_PID1add_d             ,  nfunc},
-        {2,"outputmax_S1", ips200_x_max-10 * 7, 200, 0,0,0,    S_PID1sub_outputmax             ,  S_PID1add_outputmax             ,  nfunc},
+        {2,"P_S1",     ips200_x_max-10 * 7, 140, 0,0,1,    S_PID1sub_p             ,  S_PID1add_p             ,  nfunc},
+        {2,"I_S1",     ips200_x_max-10 * 7, 160, 0,0,1,    S_PID1sub_i             ,  S_PID1add_i             ,  nfunc},
+        {2,"D_S1",     ips200_x_max-10 * 7, 180, 0,0,1,    S_PID1sub_d             ,  S_PID1add_d             ,  nfunc},
+        {2,"outputmax_S1", ips200_x_max-10 * 7, 200, 0,0,1,     S_PID1sub_outputmax             ,  S_PID1add_outputmax             ,  nfunc},
+        {2,"reset_S1",     ips200_x_max-10 * 7, 220, 0,0,1,     PID2_init, nfunc , nfunc},
 
 
     {1,"carstatue",0,60,0,0,0,nfunc,nfunc,nfunc},
         {2,"v_left"         ,ips200_x_max-10*7,20,0,0,1,                nfunc,nfunc,nfunc},
         {2,"v_right"        ,ips200_x_max -10*7,40,0,0,1,                nfunc,nfunc,nfunc},
         {2,"encoder_right"  ,ips200_x_max-10*7,60,0,0,0,                nfunc,nfunc,nfunc},
-        {2,"encoder_left"   ,ips200_x_max-10*7,80,0,0,0,                start_car,nfunc,nfunc},
+        {2,"encoder_left"   ,ips200_x_max-10*7,80,0,0,0,                nfunc,nfunc,nfunc},
         {2,"speed",          ips200_x_max-10 * 7 ,100 ,0,0,0, subspeed,           addspeed,          nfunc },
         {2,"forwardsight",   ips200_x_max-10 * 7 ,120 ,0,0,0, subforwardsight,           addforwardsight,          nfunc },
         {2,"reset_C",     ips200_x_max-10 * 7, 140, 0,0,1,  car_init, nfunc , nfunc},
@@ -223,26 +224,23 @@ void update(void)
                 menu[i].value_i=forwardsight;
 
             }
-            if (strcmp(menu[i].str, "p_S1"))
+            if (strcmp(menu[i].str, "P_S1")==0)
             {
-                menu[i].value_f=pid_ptr2->p;
+                menu[i].value_f=    pid_ptr2->p;
             }
-            if (strcmp(menu[i].str, "i_S1"))
+            if (strcmp(menu[i].str, "I_S1")==0) 
             {
                 menu[i].value_f=    pid_ptr2->i;
             }
-            if (strcmp(menu[i].str, "d_S1"))
+            if (strcmp(menu[i].str, "D_S1")==0)
             {
                 menu[i].value_f=    pid_ptr2->d;
             }
-            if (strcmp(menu[i].str, "outputmax_S1"))
+            if (strcmp(menu[i].str, "outputmax_S1")==0)
             {
                 menu[i].value_i=    pid_ptr2->outputmax;
             }
-            if (strcmp(menu[i].str, "outputmin_S1"))
-            {
-                menu[i].value_i=-pid_ptr2->outputmax;
-            }
+
 
             
 

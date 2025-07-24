@@ -12,6 +12,7 @@
 #include "track.h"
 #include "steer_pid.h"
 #include "buzzer.h"
+#include "speed.h"
 bool save_flag=false;
 bool stop_flag1;                            //停�?�标志�??
 bool start_flag=false;                     //发车标识�?
@@ -37,7 +38,8 @@ void all_init(void)
     Key_init();                     
     BUZZ_init();
     motor_init();
-    S_PID_CAL_init();
+    
+
     while(1)//摄像�?... 
     {
         if(mt9v03x_init())
@@ -46,8 +48,6 @@ void all_init(void)
         }
         else
         {
-
-
             break;
         }
         system_delay_ms(50);
@@ -97,16 +97,16 @@ void flash_save(void)
         flash_erase_page(100,2);
         flash_write_page_from_buffer(100,2);        // 向指�? Flash 扇区的页码写入缓冲区数据
 
-        if (flash_check(101, 0)){flash_erase_page(101, 0);}
+        if (flash_check(99, 0)){flash_erase_page(99, 0);}
         flash_buffer_clear();
         flash_union_buffer[0].float_type=S_PID1.p;
         flash_union_buffer[1].float_type=S_PID1.i;
         flash_union_buffer[2].float_type=S_PID1.d;
         flash_union_buffer[3].float_type=S_PID1.outputmax;
         flash_union_buffer[4].float_type=S_PID1.outputmin;
-        flash_erase_page(101,0);
-        flash_write_page_from_buffer(101,0);        
-        
+        flash_erase_page(99,0);
+        flash_write_page_from_buffer(99,0);        
+        ips200_show_int(0,280,1,1);
 
         save_flag=false;
     }
@@ -120,6 +120,7 @@ int main (void)
     { 
         Key_Scan();             //按键�?�?
         Menu_control();         //菜单控制
+        
         flash_save();           //flash�?�?
 		BUZZ_cycle();           //蜂鸣器循�?
         if(mt9v03x_finish_flag)
@@ -132,6 +133,7 @@ int main (void)
                 
                  ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //图像处理�?注释�?
                 element_check();
+                Velocity_Control();
                 show_line(); 
             }                                                                   
 			if( encodercounter1>15000)

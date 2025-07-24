@@ -24,10 +24,10 @@ void pid_vparam_init(void)
 {
     PID_V.d=0;
     PID_V.d_max=0.1;
-    PID_V.i=0;
+    PID_V.i=1;
     PID_V.i_max=10;
     PID_V.output_max=100;
-    PID_V.p=0;
+    PID_V.p=32.2;
 }
 
 struct pid_v* PID_vget_param(void)

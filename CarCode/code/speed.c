@@ -6,13 +6,14 @@
 
 extern bool start_flag;
 extern float error;
-extern int32 speed;
+extern int32 speed;             //基础速度
+extern int32 speed_stragety;    //决策速度
 
 uint8 car_situation=0;
-int32 speed_stragety;
 
 void Velocity_Control(void)//赛道类型判别，来选定速度
 {
+    
     if(start_flag==true)
     {
         if(error>40||error<-40)

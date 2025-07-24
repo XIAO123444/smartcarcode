@@ -12,7 +12,6 @@ extern int forwardsight;
 void flash_init(void)
 {
     flash_buffer_clear();
-////这里写要载入的数据
     flash_read_page_to_buffer(100, 0);                            // 将数据从 flash 读取到缓冲区
     PID_V.p                =flash_union_buffer[0].float_type;
     PID_V.i                =flash_union_buffer[1].float_type;
@@ -30,10 +29,10 @@ void flash_init(void)
     flash_buffer_clear();
     flash_read_page_to_buffer(100, 2);                            // 将数据从 flash 读取到缓冲区
     speed                  =flash_union_buffer[0].int32_type;
-    forwardsight                  =flash_union_buffer[1].int32_type;
+    forwardsight            =flash_union_buffer[1].int32_type;
 
     flash_buffer_clear();
-    flash_read_page_to_buffer(101, 0);                            // 将数据从 flash 读取到缓冲区
+    flash_read_page_to_buffer(99, 0);                            // 将数据从 flash 读取到缓冲区
     S_PID1.p                =flash_union_buffer[0].float_type;  
     S_PID1.i                =flash_union_buffer[1].float_type;
     S_PID1.d                =flash_union_buffer[2].float_type;

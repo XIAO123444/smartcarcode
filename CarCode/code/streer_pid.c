@@ -6,18 +6,18 @@ struct steer_pid S_PID;
 struct steer_pid S_PID1;
 void PID_init(void)
 {
-    S_PID.p=0;
+    S_PID.p=2;
     S_PID.i=0;
-    S_PID.d=0;
+    S_PID.d=0.01;
     S_PID.outputmax=140;
     S_PID.outputmin=-140;
     S_PID.target=140/2;
 }
 void PID2_init(void)
 {
-    S_PID1.p=0;
+    S_PID1.p=2;
     S_PID1.i=0;
-    S_PID1.d=0;
+    S_PID1.d=0.01;
     S_PID1.outputmax=140;
     S_PID1.outputmin=-140;
     S_PID1.target=140/2;
@@ -28,15 +28,13 @@ volatile float derivative=0;
 volatile float intgral=0;
 volatile float error=0;
 volatile float Lasterror=0;
-float turn;
-float addturn;
+
 
 volatile float derivative1=0;
 volatile float intgral1=0;  
 volatile float error1=0;
 volatile float Lasterror1=0;
-volatile float turn2;
-volatile float addturn2;
+
 struct steer_pid* SPID_vget_param(void)
 {
     return &S_PID;
@@ -45,11 +43,7 @@ struct steer_pid* SPID1_vget_param(void)
 {
     return &S_PID1;
 }
-void S_PID_CAL_init(void)
-{
-    pit_ms_init(TIM7_PIT,20);
-    interrupt_set_priority(TIM7_IRQn, 4);
-}
+
 int S_PID_CAL()
 {
     //int16 measure=output_middle(); 

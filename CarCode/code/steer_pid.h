@@ -13,14 +13,14 @@ struct steer_pid
 };
 
 void PID_init(void);
+void PID2_init(void);
+
 void S_PID_CAL_init(void);
 
-
-struct steer_pid* SPID_vget_param(void);
 struct steer_pid* SPID1_vget_param(void);
-
-int S_PID_CAL();
-
+struct steer_pid* SPID_vget_param(void);
+int S_PID_CAL(void);
+int S_PID1_CAL(void);
 
 
 
