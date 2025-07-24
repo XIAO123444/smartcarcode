@@ -98,15 +98,15 @@ void element_check(void) {
 		//Ô²»·¡ý¡ý¡ý¡ý¡ý¡ý¡ý 
 		//Ô²»·¡ý¡ý¡ý¡ý¡ý¡ý¡ý
 		//Ô²»·¡ý¡ý¡ý¡ý¡ý¡ý¡ý
-//        if(continuity_left(5, MT9V03X_H-5)==0 &&continuity_right(5, MT9V03X_H-5)
-//            && Right_Down_Find!=0&&right_budandiao>10
-//            &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
-//        &&rightlostpoint[0]<70)
-//        {
-//        carstatus_now = round_2;
-//        BUZZ_START();
-//        return;
-//        }
+       if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
+           && Right_Down_Find!=0&&right_budandiao>10
+           &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
+       &&rightlostpoint[0]<70)
+       {
+       carstatus_now = round_2;
+       BUZZ_START();
+       return;
+       }
 
             if(Left_Up_Find >= 10 && Right_Up_Find >= 10) {
                 carstatus_now = crossroad;
