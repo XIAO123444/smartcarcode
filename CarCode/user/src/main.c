@@ -5,7 +5,7 @@
 #include "encoder.h"
 #include "key.h"
 #include "pid_v.h"
-#include "flash.h"//老大
+#include "flash.h"//耝大
 #include "motor.h"
 #include "photo_chuli.h"
 #include "screen.h"
@@ -14,11 +14,11 @@
 #include "buzzer.h"
 #include "speed.h"
 bool save_flag=false;
-bool stop_flag1;                            //停�?�标志�??
-bool start_flag=false;                     //发车标识�?
+bool stop_flag1;                            //坜�?�标志�??
+bool start_flag=false;                     //坑车标识�?
 
 extern uint8 leftline_num;//左线点数�?
-extern uint8 rightline_num;//右线点数�?
+extern uint8 rightline_num;//坳线点数�?
 extern struct pid_v PID_V;                  //pid_V
 extern struct steer_pid S_PID;
 extern struct steer_pid S_PID1;
@@ -40,7 +40,7 @@ void all_init(void)
     motor_init();
     
 
-    while(1)//摄像�?... 
+    while(1)//摄僝�?... 
     {
         if(mt9v03x_init())
         {
@@ -62,7 +62,7 @@ void flash_save(void)
         if(flash_check(100, 0)){flash_erase_page(100, 0);}
         flash_buffer_clear();
         
-        //100,0储存pid_v的数�?
+        //100,0储存pid_v的数�?
         flash_union_buffer[0].float_type=PID_V.p;
         flash_union_buffer[1].float_type=PID_V.i;    
         flash_union_buffer[2].float_type=PID_V.d;
@@ -71,9 +71,9 @@ void flash_save(void)
         flash_union_buffer[5].float_type=PID_V.output_max;
         
         flash_erase_page(100,0);
-        flash_write_page_from_buffer(100,0);        // 向指�? Flash 扇区的页码写入缓冲区数据
+        flash_write_page_from_buffer(100,0);        // 坑指�? Flash 扇区的页砝写入缓冲区数杮
 
-        //100,1储存图象处理的数�?
+        //100,1储存图象处睆的数�?
         
         
         if(flash_check(100, 1)){flash_erase_page(100, 1);}
@@ -86,7 +86,7 @@ void flash_save(void)
         flash_union_buffer[4].float_type=S_PID.outputmin;
         
         flash_erase_page(100,1);
-        flash_write_page_from_buffer(100,1);        // 向指�? Flash 扇区的页码写入缓冲区数据
+        flash_write_page_from_buffer(100,1);        // 坑指�? Flash 扇区的页砝写入缓冲区数杮
 
         if(flash_check(100, 2)){flash_erase_page(100, 2);}
         flash_buffer_clear();
@@ -95,7 +95,7 @@ void flash_save(void)
         flash_union_buffer[1].int32_type=forwardsight;
         
         flash_erase_page(100,2);
-        flash_write_page_from_buffer(100,2);        // 向指�? Flash 扇区的页码写入缓冲区数据
+        flash_write_page_from_buffer(100,2);        // 坑指�? Flash 扇区的页砝写入缓冲区数杮
 
         if (flash_check(99, 0)){flash_erase_page(99, 0);}
         flash_buffer_clear();
@@ -116,14 +116,14 @@ int main (void)
     stop_flag1=false;
     while(1)
     { 
-        Key_Scan();             //按键�?�?
-        Menu_control();         //菜单控制
+        Key_Scan();             //按键�?�?
+        Menu_control();         //蝜坕控制
  
         flash_save();           //flash�?�?
 		BUZZ_cycle();           //蜂鸣器循�?
         if(mt9v03x_finish_flag)
         { 
-            image_threshold=my_adapt_threshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);//图像获取阈�?
+            image_threshold=my_adapt_threshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);//图僝获坖阈�?
              set_b_imagine(image_threshold);
             image_boundary_process2();
             element_check();
@@ -131,7 +131,7 @@ int main (void)
             if(current_state==1)
             {
                 
-//                 ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //图像处理�?注释�?
+//                 ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       
                 show_line(); 
             }                                                                   
 			if( encodercounter1>15000)

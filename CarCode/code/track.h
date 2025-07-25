@@ -13,6 +13,6 @@
 void element_check(void); 
 int16 output_middle2(void);
 
-
+float output_middle3(void);
 
 #endif

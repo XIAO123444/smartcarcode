@@ -47,6 +47,20 @@ extern int16 right_up_guai[2];     // 右上拐点
 extern int16 left_down_guai[2];    // 左下拐点
 extern int16 left_up_guai[2];      // 左上拐点
 
+//加权控制
+const uint8 Weight[MT9V03X_H]=
+{
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端00 ——09 行权重10
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端10 ——19 行权重10
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端10 ——29 行权重10
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,             //图像最远端20 ——39 行权重10
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 4, 5,              //图像最远端30 ——49 行权重19
+        6, 7, 9,11,13,15,17,19,20,20,              //图像最远端50 ——59 行权重137
+        19,17,15,13,11, 9, 7, 5, 3, 1,              //图像最远端60 ——69 行权重100
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端70 ——79 行权重10
+        1, 1, 1, 1, 1, 1, 1              //图像最远端80 ——89 行权重10
+};
+
 // 圆环标志
 extern int16 right_budandiao;       // 右不单调点
 float right_dxbudandiao;            // 右不单调点斜率
@@ -69,8 +83,29 @@ int16 output_middle2(void) {
 
     result=centerline2[search_stop];
     return centerline2[search_stop];
+    
+
+
+
 } 
  
+float output_middle3(void) {
+
+   
+    int i;
+    float err=0;
+    float weight_count=0;
+    //常规误差
+    for(i=MT9V03X_H-1;i>=MT9V03X_H-search_stop-1;i--)//常规误差计算
+    {
+        err+=(MT9V03X_W/2-((leftfollowline[i]+rightfollowline[i])>>1))*Weight[i];//右移1位，等效除2
+        weight_count+=Weight[i];
+    }
+    err=err/weight_count;
+    return err;//注意此处，误差有正负，还有小数，注意数据类型
+
+
+} 
 int32 encodercounter=0;
 
 
@@ -90,6 +125,10 @@ void centerline2_change(void) {
     for(int16 i=MT9V03X_H-1; i>search_stop; i--) {
                 centerline2[i] = (rightfollowline[i] + leftfollowline[i]) / 2;
 
+    }
+    for(int16 i=search_stop;i>=0;i--)
+    {
+        centerline2[i]=MT9V03X_W/2;
     }
 }
 void island_check(void)
@@ -129,13 +168,13 @@ void island_check(void)
                 right_down_guai[0]=Find_Right_Down_Point(MT9V03X_H-1,20);//右下点
                 if(right_down_guai[0]>=30)//条件1很松，在这里加判拐点，位置不对，则是误判，跳出
                 {
-                    carstatus_now==straight;
+                    carstatus_now=straight;
                     Island_State=1;
                     right_island_flag=1;
                 }
                 else
                 {
-                    carstatus_now==straight;
+                    carstatus_now=straight;
                     Island_State=0;
                     right_island_flag=0;
                 }

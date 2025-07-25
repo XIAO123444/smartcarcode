@@ -13,11 +13,11 @@ extern int32 forwardsight_stragety;
 uint8 car_situation=0;
 
 void Velocity_Control(void)//赛道类型判别，来选定速度
-{
+{ 
     
     if(start_flag==true)
     {
-        if(error>7||error<-7)
+        if(error>5||error<-5)
         {
             car_situation=1;//弯道
         } 
@@ -25,9 +25,9 @@ void Velocity_Control(void)//赛道类型判别，来选定速度
         {
             car_situation=0;
         } 
-        if(car_situation==0)//直道
+        if(car_situation==0)//直道 
         {
-            speed_stragety=speed 
+            speed_stragety=speed*1.6; 
             ;
             forwardsight_stragety=forwardsight;
             

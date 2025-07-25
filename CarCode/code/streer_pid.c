@@ -49,6 +49,7 @@ int S_PID_CAL()
     //int16 measure=output_middle(); 
     int16 measure =output_middle2();//补线成功就用这个代码
     error = 80-(float)measure;//大于0的时候是左偏移<0右偏
+//    error=output_middle3();
     intgral+=error;
     derivative=error-Lasterror;
     int result=( int )(S_PID.p*error+S_PID.i*intgral+S_PID.d*derivative);
@@ -75,8 +76,11 @@ int S_PID_CAL()
 }
 int S_PID1_CAL()
 {
-    int16 measure=output_middle2();
-    error = 80-(float)measure;
+    //int16 measure=output_middle(); 
+    int16 measure =output_middle2();//补线成功就用这个代码
+    error = 80-(float)measure;//大于0的时候是左偏移<0右偏
+
+//    error =output_middle3();
     intgral+=error;
     derivative=error1-Lasterror;
     int result=( int )(S_PID1.p*error+S_PID1.i*intgral+S_PID1.d*derivative);
