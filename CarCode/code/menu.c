@@ -102,9 +102,11 @@ MENU menu[]={
         {2,"speed",          ips200_x_max-10 * 7 ,100 ,0,0,0, subspeed,           addspeed,          nfunc },
         {2,"forwardsight",   ips200_x_max-10 * 7 ,120 ,0,0,0, subforwardsight,           addforwardsight,          nfunc },
         {2,"reset_C",     ips200_x_max-10 * 7, 140, 0,0,1,  car_init, nfunc , nfunc},
-
+    
 
     {1,"START_THECAR",0,80,0,0,0,start_car,nfunc,nfunc},
+
+
 
 
     {1,"end",0,0,0,0,0}//≤ªø……æ»•

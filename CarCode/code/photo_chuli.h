@@ -14,8 +14,9 @@ bool stop_flag(void);
 
 
 int16 continuity_left(uint8 start,uint8 end);
-int16 montonicity_right(uint8 start,uint8 end);
 int16 continuity_right(uint8 start,uint8 end);
+int16 montonicity_right(uint8 start,uint8 end);
+int16 montonicity_left(uint8 start,uint8 end);
 
 //Ê®×Ö
 void Find_Down_Point(int16 start,int16 end);

@@ -106,7 +106,6 @@ void flash_save(void)
         flash_union_buffer[4].float_type=S_PID1.outputmin;
         flash_erase_page(99,0);
         flash_write_page_from_buffer(99,0);        
- 
         save_flag=false;
     }
 }
@@ -119,7 +118,7 @@ int main (void)
     { 
         Key_Scan();             //按键�?�?
         Menu_control();         //菜单控制
-        
+ 
         flash_save();           //flash�?�?
 		BUZZ_cycle();           //蜂鸣器循�?
         if(mt9v03x_finish_flag)
@@ -127,12 +126,12 @@ int main (void)
             image_threshold=my_adapt_threshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);//图像获取阈�?
              set_b_imagine(image_threshold);
             image_boundary_process2();
+            element_check();
+            Velocity_Control();
             if(current_state==1)
             {
                 
-                 ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //图像处理�?注释�?
-                element_check();
-                Velocity_Control();
+//                 ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //图像处理�?注释�?
                 show_line(); 
             }                                                                   
 			if( encodercounter1>15000)

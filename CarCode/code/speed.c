@@ -8,7 +8,8 @@ extern bool start_flag;
 extern float error;
 extern int32 speed;             //基础速度
 extern int32 speed_stragety;    //决策速度
-
+extern int32 forwardsight;
+extern int32 forwardsight_stragety;
 uint8 car_situation=0;
 
 void Velocity_Control(void)//赛道类型判别，来选定速度
@@ -16,21 +17,25 @@ void Velocity_Control(void)//赛道类型判别，来选定速度
     
     if(start_flag==true)
     {
-        if(error>10||error<-10)
+        if(error>7||error<-7)
         {
             car_situation=1;//弯道
         } 
-        else
+        else 
         {
             car_situation=0;
         } 
         if(car_situation==0)//直道
         {
-            speed_stragety=speed*1.2;
+            speed_stragety=speed 
+            ;
+            forwardsight_stragety=forwardsight;
+            
         }
         if(car_situation==1)
-        {
-            speed_stragety=speed*0.9;
+        { 
+            speed_stragety=speed; 
+            forwardsight_stragety=forwardsight;
         }
         
         

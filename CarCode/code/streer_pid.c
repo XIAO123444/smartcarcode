@@ -124,8 +124,8 @@ void S_PIDadd_outputmax(void) {
 
 }
 void S_PIDsub_p(void) {
-    if (S_PID.p > 0.1) {  
-        S_PID.p -= 0.1;   
+    if (S_PID.p > 0.01) {  
+        S_PID.p -= 0.01;   
         if (S_PID.p < 0) S_PID.p = 0;  
     }
 }
@@ -171,8 +171,8 @@ void S_PID1add_outputmax(void) {
 
 }
 void S_PID1sub_p(void) {
-    if (S_PID1.p > 0.1) {  
-        S_PID1.p -= 0.1;   
+    if (S_PID1.p > 0.01) {  
+        S_PID1.p -= 0.01;   
         if (S_PID1.p < 0) S_PID1.p = 0;  
     }
 }

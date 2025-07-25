@@ -60,7 +60,7 @@ extern int32 encoder2;
 extern bool save_flag;          //布尔类型flash存储标志
 extern int speed;
 int32 speed_stragety;
-
+int32 forwardsight_stragety;
 int turn1 =0;
 int turn2 =0;
 int encodercounter1=0;
