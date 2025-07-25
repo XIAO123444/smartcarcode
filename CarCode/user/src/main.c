@@ -106,8 +106,7 @@ void flash_save(void)
         flash_union_buffer[4].float_type=S_PID1.outputmin;
         flash_erase_page(99,0);
         flash_write_page_from_buffer(99,0);        
-        ips200_show_int(0,280,1,1);
-
+ 
         save_flag=false;
     }
 }

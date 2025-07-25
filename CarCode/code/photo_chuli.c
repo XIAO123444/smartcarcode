@@ -23,6 +23,9 @@ int16 right_longest[2]={0,0};  //ÓÒ×î³¤°×ÁĞÊıºÍ×ó×î³¤°×ÁĞµã0³¤¶È£¬1ÎªWË÷Òı
 int16 left_start_point=0;  //×óÆğµã
 int16 right_start_point=MT9V03X_W-1; //ÓÒÆğµã
 
+int16 boundry_start_left=0; //×ó±ß½çÆğÊ¼µã
+int16 boundry_start_right=0; //ÓÒ±ß½çÆğÊ¼µã
+
 int16 search_stop=0; //ÖÕÖ¹µã
 
 uint16 left_lost_flag[MT9V03X_H];//×ó¶ªÏßÊı×é   0-Î´¶ªÏß£¬1-¶ªÏß
@@ -415,6 +418,11 @@ void image_boundary_process2(void)
             bothlostpoint[1]=row;
             both_lost_flag[row]=1;
         }
+        if(boundry_start_left==0&&leftline[row]!=0) {boundry_start_left=row;}   //×ó±ß½çÆğÊ¼µã
+        if(boundry_start_right==0&&rightline[row]!=MT9V03X_W-1) {boundry_start_right=row;} //ÓÒ±ß½çÆğÊ¼µã
+
+        
+        
     }
 }
 
@@ -728,7 +736,7 @@ int16 Find_Left_Down_Point(int16 start,int16 end)//ÕÒ×óÏÂ½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµ
   Sample     right_down_guai[0]=Find_Left_Down_Point(MT9V03X_H-1,20);
   @note      ½Çµã¼ì²âãĞÖµ¿É¸ù¾İÊµ¼ÊÖµ¸ü¸Ä
 -------------------------------------------------------------------------------------------------------------------*/
-int16 Find_Right_Down_Point(uint8 start,uint8 end)
+int16 Find_Right_Down_Point(int16 start,int16 end)
 {
     right_down_line=0;
     if(start>MT9V03X_H-5)
@@ -758,6 +766,76 @@ int16 Find_Right_Down_Point(uint8 start,uint8 end)
     }
 //    printf("find_pointright%d,",right_down_line);
     return right_down_line;                                                         //ÔÚi´¦ÓĞ½Çµã
+}
+
+int16 Find_Right_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄĞĞÊı
+{
+    int i,t;
+    int right_up_line=0;
+    if(rightlostpoint[0]>=0.9*MT9V03X_H)//´ó²¿·Ö¶¼¶ªÏß£¬Ã»ÓĞ¹ÕµãÅĞ¶ÏµÄÒâÒå
+        return right_up_line;
+    if(start<end)
+    {
+        t=start;
+        start=end;
+        end=t;
+    }    
+    if(end<=MT9V03X_H-search_stop)//ËÑË÷½ØÖ¹ĞĞÍùÉÏµÄÈ«¶¼²»ÅĞ
+        end=MT9V03X_H-search_stop;
+    if(end<=5)//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç
+        end=5;
+    if(start>=MT9V03X_H-1-5)
+        start=MT9V03X_H-1-5;
+    for(i=start;i>=end;i--)
+    {
+        if(right_up_line==0&&//Ö»ÕÒµÚÒ»¸ö·ûºÏÌõ¼şµÄµã
+           abs(rightline[i]-rightline[i-1])<=5&&//ÏÂÃæÁ½ĞĞÎ»ÖÃ²î²»¶à
+           abs(rightline[i-1]-rightline[i-2])<=5&&  
+           abs(rightline[i-2]-rightline[i-3])<=5&&
+              (rightline[i]-rightline[i+2])<=-8&&
+              (rightline[i]-rightline[i+3])<=-15&&
+              (rightline[i]-rightline[i+4])<=-15)
+        {
+            right_up_line=i;//»ñÈ¡ĞĞÊı¼´¿É
+            break;
+        }
+    }
+    return right_up_line;
+}
+
+int16 Find_Left_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄĞĞÊı
+{
+    int i,t;
+    int left_up_line=0;
+    if(leftlostpoint[0]>=0.9*MT9V03X_H)//´ó²¿·Ö¶¼¶ªÏß£¬Ã»ÓĞ¹ÕµãÅĞ¶ÏµÄÒâÒå
+        return left_up_line;
+    if(start<end)
+    {
+        t=start;
+        start=end;
+        end=t;
+    }
+    if(end<=MT9V03X_H-search_stop)//ËÑË÷½ØÖ¹ĞĞÍùÉÏµÄÈ«¶¼²»ÅĞ
+        end=MT9V03X_H-search_stop;
+    if(end<=5)//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç
+        end=5;
+    if(start>=MT9V03X_H-1-5)
+        start=MT9V03X_H-1-5;
+    for(i=start;i>=end;i--)
+    {
+        if(left_up_line==0&&//Ö»ÕÒµÚÒ»¸ö·ûºÏÌõ¼şµÄµã
+           abs(leftline[i]-leftline[i-1])<=5&&
+           abs(leftline[i-1]-leftline[i-2])<=5&&  
+           abs(leftline[i-2]-leftline[i-3])<=5&&
+              (leftline[i]-leftline[i+2])>=8&&
+              (leftline[i]-leftline[i+3])>=15&&
+              (leftline[i]-leftline[i+4])>=15)
+        {
+            left_up_line=i;//»ñÈ¡ĞĞÊı¼´¿É
+            break;
+        }
+    }
+    return left_up_line;//Èç¹ûÊÇMT9V03X_H-1£¬ËµÃ÷Ã»ÓĞÕâÃ´¸ö¹Õµã
 }
 /*
 ------------------------------------------------------------------------------------------------------------------
@@ -875,6 +953,41 @@ int16 montonicity_right(uint8 start,uint8 end)
     }
     return 0;
 
+}
+int16 montonicity_left(uint8 start,uint8 end)
+{
+    int16 i;
+    int16 result=0;
+
+            if(start<end)
+    {
+        uint8 t=start;
+        start=end;
+        end=t;
+    }
+    if(start>=MT9V03X_H-5)//Êı×éÔ½½ç±£»¤
+        start=MT9V03X_H-5;
+    if(end<=5)
+    {
+        end=5;
+    }
+    for(i=start;i>=end;i--)
+    {
+
+        if(leftline[i]-leftline[i-1]>=0&&leftline[i-1]-leftline[i-2]>=0&&leftline[i-2]-leftline[i-3]>=0
+            &&leftline[i]-leftline[i+1]>=0&&leftline[i+1]-leftline[i+2]>=0&&leftline[i+2]-leftline[i+3]>=0&&
+        leftline[i]!=0&&
+        leftline[i+1]!=0&&
+        leftline[i-1]!=0&&
+        leftline[i+2]!=0&&
+        leftline[i-2]!=0)
+        {
+            result=i;
+            return result;
+
+        }
+    }
+    return 0;
 }
 
 

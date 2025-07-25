@@ -28,15 +28,18 @@ void BUZZ_init(void)
 */
 void BUZZ_START(void)
 {
-    count_beep=5;
+    count_beep=40;
 }
 void BUZZ_cycle(void)
 {
-    while(count_beep)
+    if(count_beep)
     {
         gpio_set_level(BUZZ,GPIO_HIGH);
         count_beep--;
     }
-	gpio_set_level(BUZZ,GPIO_LOW);
+    else
+    {
+        gpio_set_level(BUZZ,GPIO_LOW);
+    }
 
 }

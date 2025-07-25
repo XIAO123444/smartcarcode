@@ -76,28 +76,28 @@ int S_PID_CAL()
 int S_PID1_CAL()
 {
     int16 measure=output_middle2();
-    error1 = 80-(float)measure;
-    intgral1+=error1;
-    derivative1=error1-Lasterror1;
-    int result=( int )(S_PID1.p*error1+S_PID1.i*intgral1+S_PID1.d*derivative1);
-    if(intgral1>18)
+    error = 80-(float)measure;
+    intgral+=error;
+    derivative=error1-Lasterror;
+    int result=( int )(S_PID1.p*error+S_PID1.i*intgral+S_PID1.d*derivative);
+    if(intgral>18)
     {
-        intgral1=18;
+        intgral=18;
     }
-    if(intgral1<-18)
+    if(intgral<-18)
     {
-        intgral1= -18 ;
+        intgral= -18 ;
     }
-    if(result>90)
+    if(result>100)
     {
-        result=90;
+        result=100;
     }
-    if(result<-90)
+    if(result<-100)
     {
-        result=-90;
+        result=-100;
 
     }
-    Lasterror1=error1;
+    Lasterror=error;
     return result;
 }
 
