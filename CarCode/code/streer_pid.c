@@ -34,6 +34,20 @@ volatile float derivative1=0;
 volatile float intgral1=0;  
 volatile float error1=0;
 volatile float Lasterror1=0;
+void spid_init(void)
+{
+    float derivative=0;
+    float intgral=0;
+    float error=0;
+    float Lasterror=0;
+
+
+    float derivative1=0;
+    float intgral1=0;  
+    float error1=0;
+    float Lasterror1=0;
+}
+
 
 struct steer_pid* SPID_vget_param(void)
 {

@@ -8,13 +8,15 @@
 
 #define ips200_x_max 240
 #define ips200_y_max 320
-extern bool start_flag;
 int current_state=1;
 int p=0;//记录当前指针
 int p_nearby=0;//记录所属的指针
 int input;
 extern int status;
 extern bool save_flag;      //保存标志位
+extern bool start_flag;     //发车标志位
+extern bool stop_flag1;     //停车标志位
+
 int32 speed;
 int32 forwardsight;
 
@@ -39,7 +41,10 @@ void nfunc(void){
 }
 void start_car(void)
 {
+    pidv_init();
+    spid_init();
     start_flag=true;
+    stop_flag1=false;
     Encoder_Init();
 }
 void addspeed()

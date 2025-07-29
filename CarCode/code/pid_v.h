@@ -17,6 +17,7 @@ extern struct pid_v PID_V;
 //int16 pid_control2(int16 target2);
 int pid_V_comon(int target);
 
+void pidv_init(void);
 
 
 

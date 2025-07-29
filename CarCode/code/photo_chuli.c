@@ -52,6 +52,7 @@ extern enum  mark carstatus_now;
 //锁列
 extern int16 bailie_lock_crossroad;
 extern int16 bailieright_lock_round;
+extern bool start_flag; //发车标志位
 
 //线点与丢线↓↓↓↓
 uint8 leftline_num;         //左线点数量
@@ -450,12 +451,10 @@ void black_protect_check(void)
     }
             if (sum>100*0.8)
         {
+            start_flag=false;
             stop_flag1=true;
         }
 }
-
-
-
 void banmaxian_check(void)
 {
 	int16 count=0;
@@ -472,7 +471,9 @@ void banmaxian_check(void)
                 }
                 if(count>=10)//如果黑色计数大于等于40，认为是斑马线
                 {
+                    
                     stop_flag1=true;
+                    start_flag=false;
                 }
             }
 }
@@ -493,14 +494,7 @@ int16 output_middle(void)
 }
 
 
-bool stop_flag(void)
-{
-    if(leftline_num<0.1*MT9V03X_H   &&rightline_num<0.1*MT9V03X_H)
-    {
-        return true;
-    }
-    else return false;
-}
+
 //十字判断
 //十字判断
 //十字判断
@@ -574,8 +568,7 @@ void Find_Down_Point(int16 start,int16 end)
     }
 
 }
-
-
+ 
 /*-------------------------------------------------------------------------------------------------------------------
   @brief     找上面的两个拐点，供十字使用,从上往下找
   @param     搜索的范围起点，终点

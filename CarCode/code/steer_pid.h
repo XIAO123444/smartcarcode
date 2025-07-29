@@ -22,6 +22,7 @@ struct steer_pid* SPID_vget_param(void);
 int S_PID_CAL(void);
 int S_PID1_CAL(void);
 
+void spid_init(void);
 
 
 

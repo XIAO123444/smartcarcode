@@ -35,3 +35,4 @@ CarCode/mdk/.clangd
 *.iex
 *.log
 *.scvd
+CarCode/mdk/.vscode/uv4.log.lock
