@@ -131,16 +131,21 @@ int main(void)
             Velocity_Control();       // 速度控制    
             if(current_state == 1)
             {
-                show_line(); 
+                if(start_flag==false)
+                {
+                    ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //
+                    show_line(); 
+                }
+                
             }                                                                   
             if(encodercounter1 > 15000)
             {	
-                banmaxian_check(); // 斑马线
+                banmaxian_check(); // 斑马线保护
             }
             black_protect_check();  // 黑色保护
             if(stop_flag1)
             {
-                pit_disable(TIM6_PIT);  // 电机停转
+                pit_disable(TIM6_PIT);  // 电机停转  
                 motor_run(0, 0);
             }
             mt9v03x_finish_flag = 0;

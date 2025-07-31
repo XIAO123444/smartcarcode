@@ -330,7 +330,6 @@ void param_init(void)
     rightlostpoint[0]=0;     //右丢线数清零
     bothlostpoint[0]=0;      //同时丢线数清零
 
-
     left_longest[1]=0;      //左最长白列索引清零
     right_longest[1]=0;     //右最长白列索引清零
     leftlostpoint[1]=0;      //左丢线点清零
@@ -362,7 +361,7 @@ void image_boundary_process2(void)
     {
         for(int16 j=MT9V03X_H-1;j>0;j--)
         {
-            if(dis_image[j][i]==255)
+            if(dis_image[j][i]==255) 
             {
                 white_point_count[i]++;     //白点计数
             }

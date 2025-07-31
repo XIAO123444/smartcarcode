@@ -50,15 +50,17 @@ extern int16 left_up_guai[2];      // 左上拐点
 //加权控制
 const uint8 Weight[MT9V03X_H]=
 {
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端00 ——09 行权重10
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端10 ——19 行权重10
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端10 ——29 行权重10
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,             //图像最远端20 ——39 行权重10
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 4, 5,              //图像最远端30 ——49 行权重19
-        6, 7, 9,11,13,15,17,19,20,20,              //图像最远端50 ——59 行权重137
-        19,17,15,13,11, 9, 7, 5, 3, 1,              //图像最远端60 ——69 行权重100
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,              //图像最远端70 ——79 行权重10
-        1, 1, 1, 1, 1, 1, 1              //图像最远端80 ——89 行权重10
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,             
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,           
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 6, 6, 6, 7, 7, 10, 10, 10,
+
+        15, 15, 20, 20, 20, 25, 25, 20, 20, 20,
+        15, 15, 10, 10, 10, 7, 7, 6, 6, 6,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,         
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1 
+    
 };
 
 // 圆环标志
@@ -83,10 +85,6 @@ int16 output_middle2(void) {
 
     result=centerline2[search_stop];
     return centerline2[search_stop];
-    
-
-
-
 } 
  
 float output_middle3(void) {
@@ -105,6 +103,25 @@ float output_middle3(void) {
     return err;//注意此处，误差有正负，还有小数，注意数据类型
 
 
+} 
+
+int16 output_middle4(void) 
+{
+    int16 result;
+    if(search_stop>MT9V03X_H-1-3)
+    {
+        return MT9V03X_W/2;         //防止数组越界
+    }
+    
+    if(search_stop<forwardsight_stragety)            //如果终止点远于 前视距离
+    {
+        result=(centerline2[forwardsight_stragety]+centerline2[forwardsight_stragety+1]+centerline2[forwardsight_stragety+2])/3;        // 取前视距离的平均值 
+        return result;                      
+        
+    }
+
+    result=(centerline2[search_stop]+centerline2[search_stop+1]+centerline2[search_stop+2])/3;          // 取终止点的平均值                  
+    return result; // 返回终止点的平均值
 } 
 int32 encodercounter=0;
 
@@ -246,7 +263,7 @@ void cross_check(void)
     Find_Up_Point(search_stop, MT9V03X_H-1);   // 查找上半段边界点
     if(Left_Up_Find >= 10 && Right_Up_Find >= 10&&bothlostpoint[0]>10&&abs(Left_Up_Find-Right_Up_Find)<50&&
     leftline[Left_Up_Find]>MT9V03X_W/2+10&&
-    leftline[Right_Up_Find<MT9V03X_W/2-10])       //如果左上点和右上点都有效且同时丢线点大于20
+    leftline[Right_Up_Find<MT9V03X_W/2-10]&&carstatus_now==straight)       //如果左上点和右上点都有效且同时丢线点大于20
       {
            crossconfirm++;
            if(crossconfirm>3) {
@@ -323,8 +340,9 @@ void element_check(void) {
     // 更新左右跟踪线 
     memcpy(leftfollowline, leftline, sizeof(leftline));
     memcpy(rightfollowline, rightline, sizeof(rightline));
+    
     centerline2_change();
-    island_check();
+//    island_check();
     cross_check();
 //    printf("carstatus,%d",carstatus_now);
 //    printf("search_stop:%d\n", search_stop);
