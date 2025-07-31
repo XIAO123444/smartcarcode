@@ -110,7 +110,7 @@ float output_middle3(void) {
 
 int16 output_middle4(void) 
 {
-    int16 result;
+    int16 result; 
     if(search_stop>MT9V03X_H-1-3)
     {
         return MT9V03X_W/2;         //防止数组越界
@@ -347,21 +347,28 @@ void element_check(void) {
     memcpy(rightfollowline, rightline, sizeof(rightline));
     
     centerline2_change();
-   printf("carstatus,%d",carstatus_now);
-   printf("search_stop:%d\n", search_stop);
-
-
-//    printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
-//    printf("rightdown%d,leftdown%d\n", Right_Down_Find, Left_Down_Find);
-
-////    /*---------- 直道状态检测 ----------*/
-  if(carstatus_now == straight) {
     Find_Up_Point(MT9V03X_H-1, search_stop); // 查找上半段边界点
     Find_Down_Point(MT9V03X_H-1, search_stop); //查找下半段边界点
     continuity_pointLeft[0]=continuity_left(MT9V03X_H-1,search_stop); // 左连续性判断
     continuity_pointRight[0]=continuity_right(MT9V03X_H-1,search_stop); // 右连续性判断
     continuity_pointLeft[1]=leftline[continuity_pointLeft[0]]; // 左连续性点列
     continuity_pointRight[1]=rightline[continuity_pointRight[0]]; // 右连续性点列
+//    if(Right_Up_Find<=5)
+//    {
+//        Right_Up_Find=0;
+//    }
+//    if(Left_Up_Find<=5)
+//    {
+//        Left_Up_Find=0;
+//    }
+
+
+
+     printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
+    printf("rightdown%d,leftdown%d\n", Right_Down_Find, Left_Down_Find);
+
+////    /*---------- 直道状态检测 ----------*/
+  if(carstatus_now == straight) {
 
 		//圆环↓↓↓↓↓↓↓
 		//圆环↓↓↓↓↓↓↓ 
@@ -406,20 +413,6 @@ void element_check(void) {
        int16 temp1_L=0;//记录第一个左拐点
        int16 temp1_R=0;//记录第一个右拐点 
 //        // 重新扫描边界突变点（从下往上）
-       Find_Up_Point(search_stop, MT9V03X_H-5);
-       temp1_L = Left_Up_Find+1; // 记录左上点
-       temp1_R = Right_Up_Find+1; // 记录右上点   
-//            
-//        int16 start_second_start=(temp1_L> temp1_R )? temp1_L : temp1_R; // 取左上点和右上点的最大值作为第二段起始点
-//        Find_Up_Point(start_second_start, MT9V03X_H-5);
-//        if((Left_Up_Find||Right_Up_Find)&&Left_Up_Find>temp1_L && Right_Up_Find>temp1_R) 
-//        {}
-//        else
-//        {
-           Left_Up_Find = temp1_L-3; // 恢复左上点
-           Right_Up_Find = temp1_R-3; // 恢复右上点
-//        }
-       Find_Down_Point(MT9V03X_H-4, search_stop);
 
       //        // 确定下半段边界点（取左右下点
       if(Left_Down_Find <= Left_Up_Find) Left_Down_Find = 0;
@@ -429,9 +422,14 @@ void element_check(void) {
       if(Left_Down_Find != 0 && Right_Down_Find != 0) {
           // 情况1：左右下点均有效 → 双边界直线拟合
           add_Rline_k(rightline[Right_Down_Find], Right_Down_Find, 
-                     Right_Up_Find, rightline[Right_Up_Find]);        // 右边界拟合
+                     Right_Up_Find-2, rightline[Right_Up_Find-2]);        // 右边界拟合
           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find,   
-                     Left_Up_Find, leftline[Left_Up_Find]);           // 左边界拟合
+                     Left_Up_Find-2, leftline[Left_Up_Find-2]);           // 左边界拟合
+//          if(Right_Up_Find<=7)
+//          {
+//            add_Rline_k(rightline[Right_Down_Find], Right_Down_Find, 
+//            0, rightline[0]);        // 右边界拟合
+//          }
           printf("cross1");
       }
       else if(Left_Down_Find == 0 && Right_Down_Find != 0) {
@@ -461,7 +459,7 @@ void element_check(void) {
       centerline2_change();
 
       // 突变点全部失效时返回直道状态
-      if(Right_Up_Find >= MT9V03X_H-10 || Left_Up_Find >=MT9V03X_H-10||Right_Up_Find<10||Left_Up_Find<10)//通过上位机检测 
+      if(Right_Up_Find >= MT9V03X_H-10 && Left_Up_Find >=MT9V03X_H-10)//通过上位机检测 
           {
           carstatus_now = straight;
           return;
@@ -470,8 +468,7 @@ void element_check(void) {
   }
   if(carstatus_now == crossroadL) 
   {
-    Find_Up_Point(MT9V03X_H-1, search_stop);                            // 查找上半段边界点
-    Find_Down_Point(MT9V03X_H-1, search_stop);                          //查找下半段边界点
+
 
     if(Left_Up_Find&&Right_Up_Find)                                     //如果左上点和右上点都有效
     {
@@ -494,8 +491,7 @@ void element_check(void) {
   }
   if(carstatus_now == crossroadR) 
   {
-    Find_Up_Point(MT9V03X_H-1, search_stop);                            // 查找上半段边界点
-    Find_Down_Point(MT9V03X_H-1, search_stop);                          //查找下半段边界点
+
 
     if(Left_Up_Find&&Right_Up_Find)                                     //如果左上点和右上点都有效
     {

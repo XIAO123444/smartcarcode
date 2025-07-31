@@ -535,9 +535,9 @@ void Find_Down_Point(int16 start,int16 end)
            abs(leftline[i]-leftline[i+1])<=5&&//角点的阈值可以更改
            abs(leftline[i+1]-leftline[i+2])<=5&&
            abs(leftline[i+2]-leftline[i+3])<=5&&
-            ((leftline[i]-leftline[i-2])>=5||leftline[i-2]<=0)&&
-            ((leftline[i]-leftline[i-3])>=7||leftline[i-3]<=0)&&
-            ((leftline[i]-leftline[i-4])>=7||leftline[i-4]<=0))
+            ((leftline[i]-leftline[i-2])>=3||leftline[i-2]<=0)&&
+            ((leftline[i]-leftline[i-3])>=5||leftline[i-3]<=0)&&
+            ((leftline[i]-leftline[i-4])>=5||leftline[i-4]<=0))
         {
             Left_Down_Find=i+2;//获取行数即可
             if(Left_Down_Find==start+2)
@@ -550,9 +550,9 @@ void Find_Down_Point(int16 start,int16 end)
            abs(rightline[i+1]-rightline[i+2])<=5&&
            abs(rightline[i+2]-rightline[i+3])<=5&&
             rightline[i]<MT9V03X_W-1&&//右边界点不能为MT9V03X_W-1
-              ((rightline[i]-rightline[i-2])<=-5||rightline[i-2]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i-3])<=-7||rightline[i-3]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i-4])<=-7||rightline[i-4]>MT9V03X_W-2))
+              ((rightline[i]-rightline[i-2])<=-3||rightline[i-2]>MT9V03X_W-2)&&
+              ((rightline[i]-rightline[i-3])<=-5||rightline[i-3]>MT9V03X_W-2)&&
+              ((rightline[i]-rightline[i-4])<=-5||rightline[i-4]>MT9V03X_W-2))
         {
             Right_Down_Find=i+2;
             if(Right_Down_Find==start+2)
@@ -601,9 +601,9 @@ void Find_Up_Point(int16 start,int16 end)
            abs(leftline[i]-leftline[i-1])<=5&&
            abs(leftline[i-1]-leftline[i-2])<=5&&
            abs(leftline[i-2]-leftline[i-3])<=5&&
-              ((leftline[i]-leftline[i+2])>=5||leftline[i+2]<1)&&
-              ((leftline[i]-leftline[i+3])>=7||leftline[i+3]<1)&&
-              ((leftline[i]-leftline[i+4])>=7||leftline[i+4]<1))
+              ((leftline[i]-leftline[i+2])>=3||leftline[i+2]<1)&&
+              ((leftline[i]-leftline[i+3])>=5||leftline[i+3]<1)&&
+              ((leftline[i]-leftline[i+4])>=5||leftline[i+4]<1))
         {
 
             Left_Up_Find=i-2;//获取行数即可
@@ -616,9 +616,9 @@ void Find_Up_Point(int16 start,int16 end)
            abs(rightline[i]-rightline[i-1])<=5&&//下面两行位置差不多
            abs(rightline[i-1]-rightline[i-2])<=5&&
            abs(rightline[i-2]-rightline[i-3])<=5&&
-              ((rightline[i]-rightline[i+2]<=-5)||rightline[i+2]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i+3])<=-7||rightline[i+3]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i+4])<=-7||rightline[i+4]>MT9V03X_W-2))
+              ((rightline[i]-rightline[i+2]<=-3)||rightline[i+2]>MT9V03X_W-2)&&
+              ((rightline[i]-rightline[i+3])<=-5||rightline[i+3]>MT9V03X_W-2)&&
+              ((rightline[i]-rightline[i+4])<=-5||rightline[i+4]>MT9V03X_W-2))
         {
             Right_Up_Find=i-2;//获取行数即可
             if(Right_Up_Find==start-2)
@@ -627,13 +627,14 @@ void Find_Up_Point(int16 start,int16 end)
             }
 
         }
+
         if(Left_Up_Find!=0&&Right_Up_Find!=0)//下面两个找到就出去
         {
             break;
         }
     }
  
-    
+     
 }
 
 
