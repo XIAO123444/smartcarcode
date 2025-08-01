@@ -25,6 +25,7 @@ extern struct steer_pid S_PID1;
 extern int current_state;
 extern int speed; 
 extern int forwardsight;
+extern int forwardsight2; // 前瞻2  
 extern int encodercounter1;
 extern int image_threshold;
 extern uint8 dis_image[MT9V03X_H][MT9V03X_W];
@@ -91,6 +92,7 @@ void flash_save(void)
 
         flash_union_buffer[0].int32_type = speed;
         flash_union_buffer[1].int32_type = forwardsight;
+        flash_union_buffer[2].int32_type = forwardsight2;
         
         flash_erase_page(100,2);
         flash_write_page_from_buffer(100,2);        // 将Flash扇区的页写入缓冲区数据

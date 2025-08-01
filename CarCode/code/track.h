@@ -15,5 +15,6 @@ int16 output_middle2(void);
 int16 output_middle4(void);
 
 float output_middle3(void);
+bool output_addspeedflag(void);
 
 #endif

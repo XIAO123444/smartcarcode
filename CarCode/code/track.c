@@ -73,6 +73,7 @@ float right_dxbudandiao;            // 右不单调点斜率
 extern uint8 leftline_num;         //左线点数量
 extern uint8 rightline_num;        //右线点数量
 
+extern int32 forwardsight2;
 extern int32 forwardsight_stragety;
 
 uint8 crossconfirm=0;
@@ -126,6 +127,21 @@ int16 output_middle4(void)
     result=(centerline2[search_stop]+centerline2[search_stop+1]+centerline2[search_stop+2])/3;          // 取终止点的平均值                  
     return result; // 返回终止点的平均值
 } 
+bool output_addspeedflag(void)
+{
+    if (search_stop<forwardsight2&&abs(centerline2[forwardsight2]-MT9V03X_W/2)<15) // 前视距离小于终止点且中心线接近中线
+     // 说明前方道路平坦，可以加速
+     // 注意：这里的15是一个经验值，可以根据实际情况调整
+    { 
+        return true; // 满足加速条件
+    } else
+     {
+        return false; // 不满足加速条件
+    }
+
+    
+}
+
 int32 encodercounter=0;
 
 

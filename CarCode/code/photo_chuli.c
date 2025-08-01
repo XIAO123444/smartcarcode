@@ -765,7 +765,6 @@ int16 Find_Right_Down_Point(int16 start,int16 end)
             break;
         }
     }
-//    printf("find_pointright%d,",right_down_line);
     return right_down_line;                                                         //在i处有角点
 }
 
@@ -873,7 +872,6 @@ int16 continuity_right(uint8 start,uint8 end)
        }
 
     }
-//      printf("continuity_right%d,\n",continuity_change_flag);没问题
 
     return continuity_change_flag;
 }
@@ -914,7 +912,6 @@ int16 continuity_left(uint8 start,uint8 end)
        }
 
     }
-        printf("continuity_left%d,\n",continuity_change_flag);
     return continuity_change_flag;
 }
 //单调性变化s

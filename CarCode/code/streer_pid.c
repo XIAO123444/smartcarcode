@@ -6,7 +6,7 @@ struct steer_pid S_PID;
 struct steer_pid S_PID1;
 void PID_init(void)
 {
-    S_PID.p=2;
+    S_PID.p=1;
     S_PID.i=0;
     S_PID.d=0.01;
     S_PID.outputmax=140;
@@ -15,7 +15,7 @@ void PID_init(void)
 }
 void PID2_init(void)
 {
-    S_PID1.p=2;
+    S_PID1.p=1;
     S_PID1.i=0;
     S_PID1.d=0.01;
     S_PID1.outputmax=140;
@@ -88,15 +88,11 @@ int S_PID_CAL()
 
     }
     Lasterror=error;
-//    printf("%d",result);
     return result;
 }
 int S_PID1_CAL()
 {
-    //int16 measure=output_middle(); 
     
-//    int16 measure =output_middle2();//补线成功就用这个代码
-//    error = 80-(float)measure;//大于0的时候是左偏移<0右偏
 
 
 
