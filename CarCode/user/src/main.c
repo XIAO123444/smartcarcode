@@ -138,7 +138,7 @@ int main(void)
                 }
                 
             }                                                                   
-            if(encodercounter1 > 15000)
+            if(encodercounter1 > 70000)
             {	
                 banmaxian_check(); // 斑马线保护
             }

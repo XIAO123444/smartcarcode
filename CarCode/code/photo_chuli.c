@@ -357,7 +357,7 @@ void image_boundary_process2(void)
     uint8 row;//行
     param_init();
     //最长白列计数
-    for(int16 i=left_start_point;i<right_start_point;i++)
+    for(int16 i=left_start_point;i<right_start_point;i+=1)
     {
         for(int16 j=MT9V03X_H-1;j>0;j--)
         {
@@ -372,16 +372,24 @@ void image_boundary_process2(void)
         }
     }
     //寻找最长白列
-    for(int16 i=left_start_point;i<right_start_point;i++)       //寻找最长左白列
+    for(int16 i=left_start_point+4;i<right_start_point-4;i+=4)       //寻找最长左白列
     {
+        if(white_point_count[i]>white_point_count[i-4]&&white_point_count[i]>white_point_count[i+4])
+        {
+            continue;
+        }
         if(white_point_count[i]>left_longest[0])
         {
             left_longest[0]=white_point_count[i];           
             left_longest[1]=i;
         }
     }
-    for(int16 i=right_start_point;i>left_start_point;i--)       //寻找最长右白列
+    for(int16 i=right_start_point-4;i>left_start_point+4;i-=4)       //寻找最长右白列
     {
+        if(white_point_count[i]>white_point_count[i-4]&&white_point_count[i]>white_point_count[i+4])
+        {
+            continue;
+        }
         if(white_point_count[i]>right_longest[0]) 
         {
             right_longest[0]=white_point_count[i];         
