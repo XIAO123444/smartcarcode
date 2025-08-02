@@ -290,7 +290,6 @@ void cross_check(void)
            if(crossconfirm>3) {
                carstatus_now = crossroad; // 进入十字路口状态
                crossconfirm = 0; // 重置确认计数
-               printf("crossroad\n");
            }
       }
       if(carstatus_now == crossroad) {
@@ -317,27 +316,23 @@ void cross_check(void)
                      Right_Up_Find, rightline[Right_Up_Find]);        // 右边界拟合
           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find,   
                      Left_Up_Find, leftline[Left_Up_Find]);           // 左边界拟合
-          printf("cross1");
       }
       else if(Left_Down_Find == 0 && Right_Down_Find != 0) {
           // 情况2：仅右下点有效 → 右边界拟合+左边界延长
           add_Rline_k(rightline[Right_Down_Find], Right_Down_Find,        // 右边界拟合
                      Right_Up_Find, rightline[Right_Up_Find]);
           lenthen_Left_bondarise(Left_Up_Find);                       //
-          printf("cross2");
       }
       else if(Left_Down_Find != 0 && Right_Down_Find == 0) {
           // 情况3：仅左下点有效 → 左边界拟合+右边界延长
           lenthen_Right_bondarise(Right_Up_Find);
           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find, 
                      Left_Up_Find, leftline[Left_Up_Find]);
-          printf("cross3");
       }
       else {
           // 情况4：无有效下点 → 双边界延长
           lenthen_Right_bondarise(Right_Up_Find);
           lenthen_Left_bondarise(Left_Up_Find);
-          printf("cross4");
       }
 
       // 异常处理：突变点失效时恢复原始边界
@@ -445,7 +440,7 @@ void element_check(void) {
 //          {
 //            add_Rline_k(rightline[Right_Down_Find], Right_Down_Find, 
 //            0, rightline[0]);        // 右边界拟合
-//          }
+//          }你 
           printf("cross1");
       }
       else if(Left_Down_Find == 0 && Right_Down_Find != 0) {

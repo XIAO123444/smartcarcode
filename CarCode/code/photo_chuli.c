@@ -606,12 +606,12 @@ void Find_Up_Point(int16 start,int16 end)
     for(i=start;i<=end;i++)
     { 
         if(Left_Up_Find==0&&//只找第一个符合条件的点
-           abs(leftline[i]-leftline[i-1])<=5&&
-           abs(leftline[i-1]-leftline[i-2])<=5&&
-           abs(leftline[i-2]-leftline[i-3])<=5&&
+           abs(leftline[i]-leftline[i-1])<=4&&
+           abs(leftline[i-1]-leftline[i-2])<=4&&
+           abs(leftline[i-2]-leftline[i-3])<=4&&
               ((leftline[i]-leftline[i+2])>=3||leftline[i+2]<1)&&
-              ((leftline[i]-leftline[i+3])>=5||leftline[i+3]<1)&&
-              ((leftline[i]-leftline[i+4])>=5||leftline[i+4]<1))
+              ((leftline[i]-leftline[i+3])>=7||leftline[i+3]<1)&&
+              ((leftline[i]-leftline[i+4])>=7||leftline[i+4]<1))
         {
 
             Left_Up_Find=i-2;//获取行数即可
@@ -621,12 +621,12 @@ void Find_Up_Point(int16 start,int16 end)
             }
         }
         if(Right_Up_Find==0&&//只找第一个符合条件的点
-           abs(rightline[i]-rightline[i-1])<=5&&//下面两行位置差不多
-           abs(rightline[i-1]-rightline[i-2])<=5&&
-           abs(rightline[i-2]-rightline[i-3])<=5&&
+           abs(rightline[i]-rightline[i-1])<=4&&//下面两行位置差不多
+           abs(rightline[i-1]-rightline[i-2])<=4&&
+           abs(rightline[i-2]-rightline[i-3])<=4&&
               ((rightline[i]-rightline[i+2]<=-3)||rightline[i+2]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i+3])<=-5||rightline[i+3]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i+4])<=-5||rightline[i+4]>MT9V03X_W-2))
+              ((rightline[i]-rightline[i+3])<=-7||rightline[i+3]>MT9V03X_W-2)&&
+              ((rightline[i]-rightline[i+4])<=-7||rightline[i+4]>MT9V03X_W-2))
         {
             Right_Up_Find=i-2;//获取行数即可
             if(Right_Up_Find==start-2)
