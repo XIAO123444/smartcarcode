@@ -352,7 +352,7 @@ void cross_check(void)
 }
 
 
-void element_check(void) {    
+void element_check(void) {     
     // 更新左右跟踪线 
     memcpy(leftfollowline, leftline, sizeof(leftline));
     memcpy(rightfollowline, rightline, sizeof(rightline));
@@ -364,15 +364,6 @@ void element_check(void) {
     continuity_pointRight[0]=continuity_right(MT9V03X_H-1,search_stop); // 右连续性判断
     continuity_pointLeft[1]=leftline[continuity_pointLeft[0]]; // 左连续性点列
     continuity_pointRight[1]=rightline[continuity_pointRight[0]]; // 右连续性点列
-//    if(Right_Up_Find<=5)
-//    {
-//        Right_Up_Find=0;
-//    }
-//    if(Left_Up_Find<=5)
-//    {
-//        Left_Up_Find=0;
-//    }
-
 
 
      printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
@@ -436,32 +427,28 @@ void element_check(void) {
                      Right_Up_Find-2, rightline[Right_Up_Find-2]);        // 右边界拟合
           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find,   
                      Left_Up_Find-2, leftline[Left_Up_Find-2]);           // 左边界拟合
-//          if(Right_Up_Find<=7)
-//          {
-//            add_Rline_k(rightline[Right_Down_Find], Right_Down_Find, 
-//            0, rightline[0]);        // 右边界拟合
-//          }你 
-          printf("cross1");
+
+        //   printf("cross1");
       }
       else if(Left_Down_Find == 0 && Right_Down_Find != 0) {
           // 情况2：仅右下点有效 → 右边界拟合+左边界延长
           add_Rline_k(rightline[Right_Down_Find], Right_Down_Find,        // 右边界拟合
                      Right_Up_Find, rightline[Right_Up_Find]);
           lenthen_Left_bondarise(Left_Up_Find);                       //
-          printf("cross2");
+        //   printf("cross2");
       }
       else if(Left_Down_Find != 0 && Right_Down_Find == 0) {
           // 情况3：仅左下点有效 → 左边界拟合+右边界延长
           lenthen_Right_bondarise(Right_Up_Find);
           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find, 
                      Left_Up_Find, leftline[Left_Up_Find]);
-          printf("cross3");
+        //   printf("cross3");
       }
       else {
           // 情况4：无有效下点 → 双边界延长
           lenthen_Right_bondarise(Right_Up_Find);
           lenthen_Left_bondarise(Left_Up_Find);
-          printf("cross4");
+        //   printf("cross4");
       }
 
       // 异常处理：突变点失效时恢复原始边界

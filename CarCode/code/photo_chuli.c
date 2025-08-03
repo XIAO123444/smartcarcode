@@ -610,8 +610,8 @@ void Find_Up_Point(int16 start,int16 end)
            abs(leftline[i-1]-leftline[i-2])<=4&&
            abs(leftline[i-2]-leftline[i-3])<=4&&
               ((leftline[i]-leftline[i+2])>=3||leftline[i+2]<1)&&
-              ((leftline[i]-leftline[i+3])>=7||leftline[i+3]<1)&&
-              ((leftline[i]-leftline[i+4])>=7||leftline[i+4]<1))
+              ((leftline[i]-leftline[i+3])>=5||leftline[i+3]<1)&&
+              ((leftline[i]-leftline[i+4])>=10||leftline[i+4]<1))
         {
 
             Left_Up_Find=i-2;//获取行数即可
@@ -625,15 +625,14 @@ void Find_Up_Point(int16 start,int16 end)
            abs(rightline[i-1]-rightline[i-2])<=4&&
            abs(rightline[i-2]-rightline[i-3])<=4&&
               ((rightline[i]-rightline[i+2]<=-3)||rightline[i+2]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i+3])<=-7||rightline[i+3]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i+4])<=-7||rightline[i+4]>MT9V03X_W-2))
+              ((rightline[i]-rightline[i+3])<=-5||rightline[i+3]>MT9V03X_W-2)&&
+              ((rightline[i]-rightline[i+4])<=-10||rightline[i+4]>MT9V03X_W-2))
         {
             Right_Up_Find=i-2;//获取行数即可
             if(Right_Up_Find==start-2)
             {
                 Right_Up_Find=0;//如果是起始行，说明没有找到
             }
-
         }
 
         if(Left_Up_Find!=0&&Right_Up_Find!=0)//下面两个找到就出去
@@ -1112,7 +1111,7 @@ void lenthen_Left_bondarise(int16 start)
 {
     if(start<7){start=7;}
     if(start>MT9V03X_H-1){start=MT9V03X_H-1;}
-    float dx=(float)(leftline[start]-leftline[start-7])/7;
+    float dx=(float)(leftline[start]-leftline[start-6])/6;
     dx1_left_average(dx);
     float dx_average=(dx1[0]+dx1[1]+dx1[2]+dx1[3]+dx1[4])/5;
     for(int16 i=start;i<MT9V03X_H-1;i++)
@@ -1140,7 +1139,7 @@ void lenthen_Right_bondarise(int16 start)
 {
     if(start<7){start=7;}
     if(start>MT9V03X_H-1){start=MT9V03X_H-1;}
-    float dx=(float)(rightline[start]-rightline[start-7])/7;
+    float dx=(float)(rightline[start]-rightline[start-6])/6;
     dx2_right_average(dx);
     float dx_average=(dx2[0]+dx2[1 ]+dx2[2]+dx2[3]+dx2[4])/5;
     for(int16 i=start;i<MT9V03X_H-1;i++)
