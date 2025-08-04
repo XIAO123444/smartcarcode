@@ -23,13 +23,13 @@ void motor_run(int16 a,int16 b)
 
     if(0 <= a)                                                           // 正转
         {
-            gpio_set_level(DIR_L, GPIO_HIGH);                                   // DIR输出高电平
+            gpio_set_level(DIR_L, GPIO_LOW);                                   // DIR输出高电平
             pwm_set_duty(PWM_L, (uint16)(a * (PWM_DUTY_MAX / 10000)));                   // 计算占空比
                  // 计算占空比
         }
         else                                                                    // 反转
         {
-            gpio_set_level(DIR_L, GPIO_LOW);                                    // DIR输出低电平
+            gpio_set_level(DIR_L, GPIO_HIGH);                                    // DIR输出低电平
             pwm_set_duty(PWM_L, (uint16)((-a) * (PWM_DUTY_MAX / 10000)));                // 计算占空比
 
                 // 计算占空比

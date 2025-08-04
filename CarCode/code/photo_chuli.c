@@ -1,4 +1,4 @@
-/*
+ /*
  * camera.c
  *
  *  Created on: 2023年10月24日
@@ -18,6 +18,9 @@ int16 rightlostpoint[2]={0,0};  //右丢线数和左丢线点0为丢线数，1为丢线索引
 int16 bothlostpoint[2]={0,0};   //同时丢线数和左丢线点0为丢线数，1为丢线索引
 
 int16 white_point_count[MT9V03X_W]={0}; //每列白点计数
+int16 white_point_count1[MT9V03X_W]   ={0}; //每列白点计数滤波 1   
+
+
 int16 left_longest[2]={0,0};  //左最长白列数和左最长白列点0长度，1为W索引
 int16 right_longest[2]={0,0};  //右最长白列数和左最长白列点0长度，1为W索引
 int16 left_start_point=0;  //左起点
@@ -349,7 +352,53 @@ void param_init(void)
     for(int16 i=0;i<MT9V03X_W;i++)
     {
         white_point_count[i]=0;     //白点计数置0
+        white_point_count1[i]=0;    //白点计数滤波1置0
     }
+}
+
+/*-------------------------------------------------------------------------------------------------------------------
+函数简介     从左往右寻找白线跳变点
+参数说明     无
+返回参数     无
+使用示例     find_jump_whitepoint_from_lefttoright();
+备注信息     无
+-------------------------------------------------------------------------------------------------------------------
+*/
+
+int16 Threshold= 4 ;
+
+void find_jump_whitepoint(void)
+{
+    int16 count=0;
+    int16 Find_FromLeftToRight[10][2]={{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}}; //存储从左往右寻找的跳变点，第一项为从左往右找到的第一个点，
+    //从左往右
+    for(int16 i=0;i<=MT9V03X_W-2;i++)//防止越界
+    {
+        if(Find_FromLeftToRight[count][0]==-1)
+        {
+            if(white_point_count[i]-white_point_count[i+1]<-Threshold) //如果当前点的白点数小于下一个点的白点数
+            {
+                Find_FromLeftToRight[count][0]=i; //存储当前点
+            }
+        }
+        else
+        {
+            if(white_point_count[i]-white_point_count[i+1]>Threshold) //如果当前点的白点数大于下一个点的白点数
+            {
+                Find_FromLeftToRight[count][1]=i; //存储当前点
+                count++;
+            }
+        }
+    }
+    for(int i=0;i<count;i++)
+    {
+        int16 whitecount=(white_point_count[Find_FromLeftToRight[i][1]+1]+white_point_count[Find_FromLeftToRight[i][0]])/2; //计算白点数平均值
+        for (int j=Find_FromLeftToRight[i][0]+1;j<=Find_FromLeftToRight[i][1];j++)
+        {
+            white_point_count1[j]=whitecount; //将平均值赋值给白点计数
+        }        
+    }
+
 }
 
 void image_boundary_process2(void)
@@ -371,10 +420,12 @@ void image_boundary_process2(void)
             }
         }
     }
+//    memcpy(white_point_count1, white_point_count, sizeof(white_point_count)); //将白点计数复制到白点计数滤波1
+//    find_jump_whitepoint(); //寻找白线跳变点
     //寻找最长白列
-    for(int16 i=left_start_point+4;i<right_start_point-4;i+=4)       //寻找最长左白列
+    for(int16 i=left_start_point+5;i<right_start_point-5;i+=3)       //寻找最长左白列
     {
-        if(white_point_count[i]>white_point_count[i-4]&&white_point_count[i]>white_point_count[i+4])
+        if(white_point_count[i]>white_point_count[i-5]&&white_point_count[i]>white_point_count[i+5])
         {
             continue;
         }
@@ -384,9 +435,9 @@ void image_boundary_process2(void)
             left_longest[1]=i;
         }
     }
-    for(int16 i=right_start_point-4;i>left_start_point+4;i-=4)       //寻找最长右白列
+    for(int16 i=right_start_point-5;i>left_start_point+5;i-=3)       //寻找最  长右白列
     {
-        if(white_point_count[i]>white_point_count[i-4]&&white_point_count[i]>white_point_count[i+4])
+        if(white_point_count[i]>white_point_count[i-5]&&white_point_count[i]>white_point_count[i+5])
         {
             continue;
         }

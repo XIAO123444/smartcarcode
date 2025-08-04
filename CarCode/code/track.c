@@ -366,8 +366,8 @@ void element_check(void) {
     continuity_pointRight[1]=rightline[continuity_pointRight[0]]; // 右连续性点列
 
 
-     printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
-    printf("rightdown%d,leftdown%d\n", Right_Down_Find, Left_Down_Find);
+//     printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
+//    printf("rightdown%d,leftdown%d\n", Right_Down_Find, Left_Down_Find);
 
 ////    /*---------- 直道状态检测 ----------*/
   if(carstatus_now == straight) {
