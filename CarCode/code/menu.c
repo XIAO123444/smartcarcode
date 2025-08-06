@@ -20,6 +20,7 @@ extern bool stop_flag1;     //停车标志位
 int32 speed;
 int32 forwardsight;
 int32 forwardsight2;//直到判断前瞻
+int32 forwardsight3;//弯道前瞻
 typedef struct 
 {
     unsigned char priority;             //页面优先级
@@ -79,11 +80,24 @@ void subforwardsight2()
         forwardsight2=0;
     }
 }
+void addforwardsight3()
+{
+    forwardsight3+=1;
+}
+void subforwardsight3()
+{
+    forwardsight3-=1;
+    if(forwardsight3<0)
+    {
+        forwardsight3=0;
+    }
+}
 void car_init(void)
 {
     speed=0;
     forwardsight=50;
     forwardsight2=100;
+    forwardsight3=50;
 }
 
 MENU menu[]={
@@ -120,8 +134,8 @@ MENU menu[]={
         {2,"speed",          ips200_x_max-10 * 7 ,100 ,0,0,0, subspeed,           addspeed,          nfunc },
         {2,"forwardsight",   ips200_x_max-10 * 7 ,120 ,0,0,0, subforwardsight,           addforwardsight,          nfunc },
         {2,"forwardsight2",   ips200_x_max-10 * 7 ,140 ,0,0,0, subforwardsight2,           addforwardsight2,          nfunc },
-
-        {2,"reset_C",     ips200_x_max-10 * 7, 160, 0,0,1,  car_init, nfunc , nfunc},
+        {2,"forwardsight3",   ips200_x_max-10 * 7 ,160 ,0,0,0, subforwardsight2,           addforwardsight2,          nfunc },
+        {2,"reset_C",     ips200_x_max-10 * 7, 180, 0,0,1,  car_init, nfunc , nfunc},
     
 
     {1,"START_THECAR",0,80,0,0,0,start_car,nfunc,nfunc},

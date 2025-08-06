@@ -9,7 +9,7 @@ extern struct steer_pid S_PID1;
 extern int speed;
 extern int forwardsight;        //前瞻1，处理转向
 extern int forwardsight2;       //前瞻2，提前看弯道
-
+extern int forwardsight3;       //前瞻3，弯道前瞻
 void flash_init(void)
 {
     flash_buffer_clear();
@@ -32,7 +32,7 @@ void flash_init(void)
     speed                  =flash_union_buffer[0].int32_type;
     forwardsight            =flash_union_buffer[1].int32_type;
     forwardsight2            =flash_union_buffer[2].int32_type;
-
+    forwardsight3            =flash_union_buffer[3].int32_type;
     flash_buffer_clear();
     flash_read_page_to_buffer(99, 0);                            // 将数据从 flash 读取到缓冲区
     S_PID1.p                =flash_union_buffer[0].float_type;  

@@ -129,7 +129,7 @@ int16 output_middle4(void)
 } 
 bool output_addspeedflag(void)
 {
-    if (search_stop<forwardsight2&&abs(centerline2[forwardsight2]-MT9V03X_W/2)<15) // 前视距离小于终止点且中心线接近中线
+    if (search_stop<forwardsight2&&abs(centerline2[forwardsight2]-MT9V03X_W/2)<10) // 前视距离小于终止点且中心线接近中线
      // 说明前方道路平坦，可以加速
      // 注意：这里的15是一个经验值，可以根据实际情况调整
     { 
@@ -386,21 +386,21 @@ void element_check(void) {
     //      return;
     //  }
 
-    if(continuity_pointLeft[0] != 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0 && Left_Up_Find != 0)//左不连续点找到 且右不连续点找到，且左上拐点找到且右上拐点找到，此时为正入十字
+    if(continuity_pointLeft[0] != 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0 && Left_Up_Find != 0&&(Right_Up_Find>search_stop-2&&Left_Up_Find>search_stop-2))//左不连续点找到 且右不连续点找到，且左上拐点找到且右上拐点找到，此时为正入十字
     {
         carstatus_now = crossroad; // 进入十字路口状态
         return;
     }
-    if(continuity_pointLeft[0] != 0&&continuity_pointRight[0] == 0 && Left_Up_Find != 0)//左不连续点找到 且右不连续点未找到，且左上拐点找到，此时为左斜入十字
+    if(continuity_pointLeft[0] != 0&&continuity_pointRight[0] == 0 && Left_Up_Find != 0&&Left_Up_Find>search_stop-2)//左不连续点找到 且右不连续点未找到，且左上拐点找到，此时为左斜入十字
     {
         carstatus_now = crossroadL; // 进入十字路口状态
         return;
     }
 
-    if(continuity_pointLeft[0] == 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0)//左不连续点未找到 右不连续点找到，且右上拐点找到，此时为右斜入十字
+    if(continuity_pointLeft[0] == 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0&&Right_Up_Find>search_stop-2)//左不连续点未找到 右不连续点找到，且右上拐点找到，此时为右斜入十字
     {
         carstatus_now = crossroadR; // 进入十字路口状态
-        return;
+        return; 
     }
      
 

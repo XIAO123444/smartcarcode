@@ -20,17 +20,17 @@ void Velocity_Control(void)//赛道类型判别，来选定速度
     if(start_flag==true)
     {
         addspeed_flag=output_addspeedflag(); //判断是否加速
-        if((error<7||error>-7)&&addspeed_flag==true)
+        if((error<6||error>-6)&&addspeed_flag==true)
         {
             car_situation=0;//弯道
-        } 
+        }  
         else 
         { 
             car_situation=1;
-        } 
+        }  
         if(car_situation==0)//直道 
-        {
-            speed_stragety=speed*1.7  ; 
+        { 
+            speed_stragety=speed * 2; 
             ;
             forwardsight_stragety=forwardsight;
             
@@ -38,7 +38,7 @@ void Velocity_Control(void)//赛道类型判别，来选定速度
         if(car_situation==1)
         {  
             speed_stragety=speed; 
-            forwardsight_stragety=forwardsight;
+            forwardsight_stragety=forwardsight*1.2;
         }
         
           
