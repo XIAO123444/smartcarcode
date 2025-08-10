@@ -360,11 +360,16 @@ void element_check(void) {
     centerline2_change();
     Find_Up_Point(MT9V03X_H-1, search_stop); // 查找上半段边界点
     Find_Down_Point(MT9V03X_H-1, search_stop); //查找下半段边界点
-    continuity_pointLeft[0]=continuity_left(MT9V03X_H-1,search_stop); // 左连续性判断
-    continuity_pointRight[0]=continuity_right(MT9V03X_H-1,search_stop); // 右连续性判断
+    continuity_pointLeft[0]=continuity_left(MT9V03X_H-1,search_stop+2); // 左连续性判断
+    continuity_pointRight[0]=continuity_right(MT9V03X_H-1,search_stop+2); // 右连续性判断
     continuity_pointLeft[1]=leftline[continuity_pointLeft[0]]; // 左连续性点列
     continuity_pointRight[1]=rightline[continuity_pointRight[0]]; // 右连续性点列
-
+    ips200_show_string(0,280,"s_stop");
+    ips200_show_int(50,280,search_stop,3);
+    ips200_show_string(80,280,"l_up");
+    ips200_show_int(120,280,Left_Up_Find,3);
+    ips200_show_string(70,300,"r_up");
+    ips200_show_int(120,300,Right_Up_Find,3);
 
 //     printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
 //    printf("rightdown%d,leftdown%d\n", Right_Down_Find, Left_Down_Find);
@@ -386,6 +391,7 @@ void element_check(void) {
     //      return;
     //  }
 
+    if(search_stop<13){
     if(continuity_pointLeft[0] != 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0 && Left_Up_Find != 0&&(Right_Up_Find>search_stop-2&&Left_Up_Find>search_stop-2))//左不连续点找到 且右不连续点找到，且左上拐点找到且右上拐点找到，此时为正入十字
     {
         carstatus_now = crossroad; // 进入十字路口状态
@@ -402,7 +408,9 @@ void element_check(void) {
         carstatus_now = crossroadR; // 进入十字路口状态
         return; 
     }
-     
+    }
+    ips200_show_string(0,300,"straig");
+
 
       
       
@@ -427,37 +435,37 @@ void element_check(void) {
                      Right_Up_Find-2, rightline[Right_Up_Find-2]);        // 右边界拟合
           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find,   
                      Left_Up_Find-2, leftline[Left_Up_Find-2]);           // 左边界拟合
-
-        //   printf("cross1");
+          ips200_show_string(0,300,"cross1");
+        //    printf("cross1");
       }
       else if(Left_Down_Find == 0 && Right_Down_Find != 0) {
           // 情况2：仅右下点有效 → 右边界拟合+左边界延长
           add_Rline_k(rightline[Right_Down_Find], Right_Down_Find,        // 右边界拟合
                      Right_Up_Find, rightline[Right_Up_Find]);
           lenthen_Left_bondarise(Left_Up_Find);                       //
-        //   printf("cross2");
+          ips200_show_string(0,300,"cross2");
       }
       else if(Left_Down_Find != 0 && Right_Down_Find == 0) {
           // 情况3：仅左下点有效 → 左边界拟合+右边界延长
           lenthen_Right_bondarise(Right_Up_Find);
           add_Lline_k(leftline[Left_Down_Find], Left_Down_Find, 
                      Left_Up_Find, leftline[Left_Up_Find]);
-        //   printf("cross3");
+        //    printf("cross3");
+            ips200_show_string(0,300,"cross3");
       }
       else {
           // 情况4：无有效下点 → 双边界延长
           lenthen_Right_bondarise(Right_Up_Find);
           lenthen_Left_bondarise(Left_Up_Find);
-        //   printf("cross4");
+        //    printf("cross4");
+        ips200_show_string(0,300,"cross4");
       }
 
       // 异常处理：突变点失效时恢复原始边界
       if(Right_Up_Find == 0) memcpy(rightfollowline, rightline, sizeof(rightline));
       if(Left_Up_Find == 0) memcpy(leftfollowline, leftline, sizeof(leftline));
       centerline2_change();
-
-      // 突变点全部失效时返回直道状态
-      if(Right_Up_Find >= MT9V03X_H-10 && Left_Up_Find >=MT9V03X_H-10)//通过上位机检测 
+      if(Right_Up_Find==0||Left_Up_Find==0)
           {
           carstatus_now = straight;
           return;
@@ -466,6 +474,8 @@ void element_check(void) {
   }
   if(carstatus_now == crossroadL) 
   {
+
+              ips200_show_string(0,300,"crossL");
 
 
     if(Left_Up_Find&&Right_Up_Find)                                     //如果左上点和右上点都有效
@@ -477,18 +487,23 @@ void element_check(void) {
     {
         add_Lline_k(leftline[Left_Down_Find], Left_Down_Find,   
         Left_Up_Find, leftline[Left_Up_Find]);           
+        centerline2_change();
     }
     if(Left_Up_Find!=0&&Left_Down_Find==0)                              //如果只找到了左上点
     {
         lenthen_Left_bondarise(Left_Up_Find);                           //延长左边界
+        centerline2_change();
+
     }
     if(Left_Up_Find==0)
     {
         carstatus_now = straight;                                      // 如果左上点未找到，返回直道状态
     }
+    
   }
   if(carstatus_now == crossroadR) 
   {
+        ips200_show_string(0,300,"crossR");
 
 
     if(Left_Up_Find&&Right_Up_Find)                                     //如果左上点和右上点都有效
@@ -499,11 +514,14 @@ void element_check(void) {
     if(Right_Up_Find!=0&&Right_Down_Find!=0)                            //如果找到了右上点和右下点
     {
         add_Rline_k(rightline[Right_Down_Find], Right_Down_Find, 
-        Right_Up_Find, rightline[Right_Up_Find]);        
+        Right_Up_Find, rightline[Right_Up_Find]);
+        centerline2_change();
     }
     if(Right_Up_Find!=0&&Right_Down_Find==0)                            //如果只找到了右上点
     {
         lenthen_Right_bondarise(Right_Up_Find);                         //延长右边界
+        centerline2_change();
+
     }
     if(Right_Up_Find==0)
     {

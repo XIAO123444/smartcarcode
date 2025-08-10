@@ -29,6 +29,8 @@ extern int forwardsight2; // 前瞻2
 extern int forwardsight3; // 前瞻3
 extern int encodercounter1;
 extern int image_threshold;
+extern int16 threshold_up;  //大津法阈值上限
+extern int16 threshold_down; //大津法阈值下限
 extern uint8 dis_image[MT9V03X_H][MT9V03X_W];
 
 void all_init(void)
@@ -95,6 +97,8 @@ void flash_save(void)
         flash_union_buffer[1].int32_type = forwardsight;
         flash_union_buffer[2].int32_type = forwardsight2;
         flash_union_buffer[3].int32_type = forwardsight3;
+        flash_union_buffer[4].int32_type = threshold_up;
+        flash_union_buffer[5].int32_type = threshold_down;
         
         flash_erase_page(100,2);
         flash_write_page_from_buffer(100,2);        // 将Flash扇区的页写入缓冲区数据
@@ -139,14 +143,15 @@ int main(void)
                 {
                     ips200_show_gray_image(0,120,(const uint8 *)dis_image,MT9V03X_W, MT9V03X_H,MT9V03X_W, MT9V03X_H,0);       //
                     show_line(); 
-                }
-                
+                } 
+                 
             }                                                                   
             if(encodercounter1 > 70000)
             {	
                 banmaxian_check(); // 斑马线保护
+                black_protect_check();  // 黑色保护
+
             }
-            black_protect_check();  // 黑色保护
             if(stop_flag1)
             {
                 pit_disable(TIM6_PIT);  // 电机停转  

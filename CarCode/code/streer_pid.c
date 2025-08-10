@@ -6,7 +6,7 @@ struct steer_pid S_PID;
 struct steer_pid S_PID1;
 void PID_init(void)
 {
-    S_PID.p=1;
+    S_PID.p=1 ;
     S_PID.i=0;
     S_PID.d=0.01;
     S_PID.outputmax=140;
@@ -78,13 +78,13 @@ int S_PID_CAL()
     {
         intgral= -18 ;
     }
-    if(result>90)
+    if(result>120)
     {
-        result=90;
+        result=120;
     }
-    if(result<-90)
+    if(result<-120)
     {
-        result=-90;
+        result=-120;
 
     }
     Lasterror=error;
@@ -112,13 +112,13 @@ int S_PID1_CAL()
     {
         intgral= -18 ;
     }
-    if(result>100)
+    if(result>120)
     {
-        result=100;
+        result=120;
     }
-    if(result<-100)
+    if(result<-120)
     {
-        result=-100;
+        result=-120;
 
     }
     Lasterror=error;
