@@ -377,19 +377,11 @@ void element_check(void) {
 ////    /*---------- 直道状态检测 ----------*/
   if(carstatus_now == straight) {
 
-		//圆环↓↓↓↓↓↓↓
+		//右圆环↓↓↓↓↓↓↓
 		//圆环↓↓↓↓↓↓↓ 
 		//圆环↓↓↓↓↓↓↓
 		//圆环↓↓↓↓↓↓↓
-    //  if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
-    //      && Right_Down_Find!=0&&right_budandiao>10
-    //      &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
-    //  &&rightlostpoint[0]<70)  
-    //  //左连续性，右连续性判断，右下角点找到，右不单调点找到，左线点数大于70，同时丢线数小于10，右丢线点数大于30右丢线点数小于70（可部分删去冗余条件）
-    //  {
-    //      carstatus_now=round_1;
-    //      return;
-    //  }
+
 
     if(search_stop<13){
     if(continuity_pointLeft[0] != 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0 && Left_Up_Find != 0&&(Right_Up_Find>search_stop-2&&Left_Up_Find>search_stop-2))//左不连续点找到 且右不连续点找到，且左上拐点找到且右上拐点找到，此时为正入十字
@@ -409,12 +401,17 @@ void element_check(void) {
         return; 
     }
     }
+    //圆环判断
+         if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
+         && Right_Down_Find!=0&&right_budandiao>10
+         &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
+     &&rightlostpoint[0]<70)  
+     //左连续性，右连续性判断，右下角点找到，右不单调点找到，左线点数大于70，同时丢线数小于10，右丢线点数大于30右丢线点数小于70（可部分删去冗余条件）
+     {
+         carstatus_now=round_1;
+         return;
+     }
     ips200_show_string(0,300,"straig");
-
-
-      
-      
-
   }
 
 //    /*---------- 十字路口状态处理 ----------*/
@@ -422,7 +419,6 @@ void element_check(void) {
        int start_down_point=5;
        int16 temp1_L=0;//记录第一个左拐点
        int16 temp1_R=0;//记录第一个右拐点 
-//        // 重新扫描边界突变点（从下往上）
 
       //        // 确定下半段边界点（取左右下点
       if(Left_Down_Find <= Left_Up_Find) Left_Down_Find = 0;
@@ -472,8 +468,7 @@ void element_check(void) {
       }
       
   }
-  if(carstatus_now == crossroadL) 
-  {
+  if(carstatus_now == crossroadL) {
 
               ips200_show_string(0,300,"crossL");
 
@@ -501,8 +496,7 @@ void element_check(void) {
     }
     
   }
-  if(carstatus_now == crossroadR) 
-  {
+  if(carstatus_now == crossroadR)  {
         ips200_show_string(0,300,"crossR");
 
 

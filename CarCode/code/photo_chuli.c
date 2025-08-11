@@ -13,6 +13,7 @@ int16 rightline[MT9V03X_H];
 int16 rightfollowline[MT9V03X_H];
 int16 leftfollowline[MT9V03X_H];
 
+
 int16 leftlostpoint[2]={0,0};   //左丢线数和左丢线点0为丢线数，1为丢线索引
 int16 rightlostpoint[2]={0,0};  //右丢线数和左丢线点0为丢线数，1为丢线索引
 int16 bothlostpoint[2]={0,0};   //同时丢线数和左丢线点0为丢线数，1为丢线索引
@@ -25,6 +26,12 @@ int16 left_longest[2]={0,0};  //左最长白列数和左最长白列点0长度，1为W索引
 int16 right_longest[2]={0,0};  //右最长白列数和左最长白列点0长度，1为W索引
 int16 left_start_point=0;  //左起点
 int16 right_start_point=MT9V03X_W-1; //右起点
+
+//y点处理
+int8 leftorright=0;                        //从左还是右找y点 左为-1 右为1 0为无效
+int16 white_y_point=-1;                     //找y点 ,没找到为-1 
+int16 leftblackpoint_index=-1;    //找左y黑点，没找到为-1
+int16 rightblackpoint_index=-1;   //找右y黑点，没找到为-1
 
 int16 boundry_start_left=0; //左边界起始点
 int16 boundry_start_right=0; //右边界起始点
@@ -40,6 +47,7 @@ int16 Right_Down_Find=0;    //右下点
 int16 Left_Down_Find=0;     //左下点
 int16 Right_Up_Find=0;      //右上点
 int16 Left_Up_Find=0;       //左上点
+
 //十字↑↑↑↑
 //车状态
 enum mark {
@@ -89,97 +97,97 @@ float dx2[5]={0};
 
 int16 right_down_line =0;
 
-//这里都是差比和↓↓↓↓↓↓↓
-/*
-------------------------------------------------------------------------------------------------------------------
-函数简介     差比和寻找边界点
-参数说明     无
-返回参数     无
-使用示例     直接调用
-备注信息     无
--------------------------------------------------------------------------------------------------------------------
-*/
-void image_boundary_process(void){
-    uint8 row;//行
-    //uint8 col = MT9V03X_W/2;//列
-    uint8 start_col = MT9V03X_W / 2;//各行起点的列坐标,默认为MT9V03X_W / 2
-    //清零之前的计数
-    leftline_num = 0;
-    rightline_num = 0;
+// //这里都是差比和↓↓↓↓↓↓↓
+// /*
+// ------------------------------------------------------------------------------------------------------------------
+// 函数简介     差比和寻找边界点
+// 参数说明     无
+// 返回参数     无
+// 使用示例     直接调用
+// 备注信息     无
+// -------------------------------------------------------------------------------------------------------------------
+// */
+// void image_boundary_process(void){
+//     uint8 row;//行
+//     //uint8 col = MT9V03X_W/2;//列
+//     uint8 start_col = MT9V03X_W / 2;//各行起点的列坐标,默认为MT9V03X_W / 2
+//     //清零之前的计数
+//     leftline_num = 0;
+//     rightline_num = 0;
 
-    for(row = MT9V03X_H - 1; row >= 1; row--){
-        //选用上一行的中点作为下一行计算起始点，节省速度，同时防止弯道的左右两边均出现与画面一侧
-        if(row != MT9V03X_H - 1){
-            start_col = (uint8)(0.4 * centerline[row] + 0.3 * start_col + 0.1 * MT9V03X_W);//一阶低通滤波，防止出现噪点影响下一行的起始点
-
-
-        }
-        else if(row == MT9V03X_H - 1){
-            start_col = MT9V03X_W / 2;
-        }
-        if(start_col<MT9V03X_W/2-30){start_col=MT9V03X_W/2-30;}
-        if(start_col>MT9V03X_W/2+30){start_col=MT9V03X_W/2+30;}
-        //逐行作差比和 
-        difsum_left(row,start_col);
-        difsum_right(row,start_col); 
-        centerline[row] = 0.5 * (rightline[row] + leftline[row]);
-    }
-}
-/*
-------------------------------------------------------------------------------------------------------------------
-函数简介     差比和寻找左侧边界点
-参数说明     
-返回参数     
-使用示例     
-备注信息     
--------------------------------------------------------------------------------------------------------------------
-*/
-void difsum_left(uint8 y,uint8 x){
-    float sum,dif,sar;//和，差，比
-    uint8 col;//列
-    uint8 mov = 3;//每次作差后的移动量,默认为2，可以根据画面分辨率调整
-    //计算第x行的左边界
-    leftline[y] = 0;//未找到左边界时输出为0
-    for(col = x; col >= mov + 1; col -= mov){
-        dif = (float)((mt9v03x_image[y][col] - mt9v03x_image[y][col - mov - 1])<<8);//左移8位即乘256，可避免浮点数乘，加快速度
-        sum = (float)((mt9v03x_image[y][col] + mt9v03x_image[y][col - mov - 1]));
-        sar = fabs(dif / sum);//求取差比和
-        if(sar > sar_thre){//差比和大于阈值代表深浅色突变
-            leftline[y] = (int16)(col - mov);
-            leftline_num ++;//左线点计数+
-            break;//找到边界后退出
-        }
-    }
-}
-/*
-------------------------------------------------------------------------------------------------------------------
-函数简介     差比和寻找右侧边界点
-参数说明     
-返回参数     
-使用示例     
-备注信息     
--------------------------------------------------------------------------------------------------------------------
-*/
-void difsum_right(uint8 y,uint8 x){
-    float sum,dif,sar;//和，差，比
-    uint8 col;//列
-    uint8 mov = 3;//每次作差后的移动量,默认为2，可以根据画面分辨率调整
-    //计算第x行的左边界
-    rightline[y] = MT9V03X_W - 1;//未找到右边界时输出为187
-    for(col = x; col <= MT9V03X_W - mov - 1; col += mov){
-        dif = (float)((mt9v03x_image[y][col] - mt9v03x_image[y][col + mov + 1])<<8);//左移8位即乘256，可避免浮点数乘，加快速度
-        sum = (float)((mt9v03x_image[y][col] + mt9v03x_image[y][col + mov + 1]));
-        sar = fabs(dif / sum);//求取差比和
-        if(sar > sar_thre){//差比和大于阈值代表深浅色突变
-            rightline[y] = (int16)(col + mov);
-            rightline_num ++;//右线点计数+
-            break;//找到边界后退出
-        }
-    }
-}
+//     for(row = MT9V03X_H - 1; row >= 1; row--){
+//         //选用上一行的中点作为下一行计算起始点，节省速度，同时防止弯道的左右两边均出现与画面一侧
+//         if(row != MT9V03X_H - 1){
+//             start_col = (uint8)(0.4 * centerline[row] + 0.3 * start_col + 0.1 * MT9V03X_W);//一阶低通滤波，防止出现噪点影响下一行的起始点
 
 
-//这里都是差比和↑↑↑↑↑↑↑
+//         }
+//         else if(row == MT9V03X_H - 1){
+//             start_col = MT9V03X_W / 2;
+//         }
+//         if(start_col<MT9V03X_W/2-30){start_col=MT9V03X_W/2-30;}
+//         if(start_col>MT9V03X_W/2+30){start_col=MT9V03X_W/2+30;}
+//         //逐行作差比和 
+//         difsum_left(row,start_col);
+//         difsum_right(row,start_col); 
+//         centerline[row] = 0.5 * (rightline[row] + leftline[row]);
+//     }
+// }
+// /*
+// ------------------------------------------------------------------------------------------------------------------
+// 函数简介     差比和寻找左侧边界点
+// 参数说明     
+// 返回参数     
+// 使用示例     
+// 备注信息     
+// -------------------------------------------------------------------------------------------------------------------
+// */
+// void difsum_left(uint8 y,uint8 x){
+//     float sum,dif,sar;//和，差，比
+//     uint8 col;//列
+//     uint8 mov = 3;//每次作差后的移动量,默认为2，可以根据画面分辨率调整
+//     //计算第x行的左边界
+//     leftline[y] = 0;//未找到左边界时输出为0
+//     for(col = x; col >= mov + 1; col -= mov){
+//         dif = (float)((mt9v03x_image[y][col] - mt9v03x_image[y][col - mov - 1])<<8);//左移8位即乘256，可避免浮点数乘，加快速度
+//         sum = (float)((mt9v03x_image[y][col] + mt9v03x_image[y][col - mov - 1]));
+//         sar = fabs(dif / sum);//求取差比和
+//         if(sar > sar_thre){//差比和大于阈值代表深浅色突变
+//             leftline[y] = (int16)(col - mov);
+//             leftline_num ++;//左线点计数+
+//             break;//找到边界后退出
+//         }
+//     }
+// }
+// /*
+// ------------------------------------------------------------------------------------------------------------------
+// 函数简介     差比和寻找右侧边界点
+// 参数说明     
+// 返回参数     
+// 使用示例     
+// 备注信息     
+// -------------------------------------------------------------------------------------------------------------------
+// */
+// void difsum_right(uint8 y,uint8 x){
+//     float sum,dif,sar;//和，差，比
+//     uint8 col;//列
+//     uint8 mov = 3;//每次作差后的移动量,默认为2，可以根据画面分辨率调整
+//     //计算第x行的左边界
+//     rightline[y] = MT9V03X_W - 1;//未找到右边界时输出为187
+//     for(col = x; col <= MT9V03X_W - mov - 1; col += mov){
+//         dif = (float)((mt9v03x_image[y][col] - mt9v03x_image[y][col + mov + 1])<<8);//左移8位即乘256，可避免浮点数乘，加快速度
+//         sum = (float)((mt9v03x_image[y][col] + mt9v03x_image[y][col + mov + 1]));
+//         sar = fabs(dif / sum);//求取差比和
+//         if(sar > sar_thre){//差比和大于阈值代表深浅色突变
+//             rightline[y] = (int16)(col + mov);
+//             rightline_num ++;//右线点计数+
+//             break;//找到边界后退出
+//         }
+//     }
+// }
+
+
+// //这里都是差比和↑↑↑↑↑↑↑
 
 //大津法↓↓↓↓↓↓↓↓↓↓
 uint8 dis_image[MT9V03X_H][MT9V03X_W];
@@ -324,12 +332,18 @@ void difsum_right1(uint8 y,uint8 x)
 备注信息     无
 -------------------------------------------------------------------------------------------------------------------
 */
+//
 void param_init(void)
 {
     leftline_num = 0;
     rightline_num = 0;
-        
-    left_longest[0]=1;  //左最长白列清零
+
+
+    leftorright=0;                        //从左还是右找y点
+    white_y_point=0;                     //找y点
+    leftblackpoint_index=-1;            //找左y黑点
+    rightblackpoint_index=-1;           //找右y黑点
+    left_longest[0]=1;      //左最长白列清零
     right_longest[0]=1;     //右最长白列清零
     leftlostpoint[0]=0;      //左丢线数清零
     rightlostpoint[0]=0;     //右丢线数清零
@@ -358,6 +372,170 @@ void param_init(void)
     }
 }
 
+
+
+int16 Threshold= 4 ;
+int16 Thresholdnum=10;
+/*-------------------------------------------------------------------------------------------------------------------
+函数简介     从中间往两边寻找黑区域
+参数说明     无
+返回参数     int8 leftoright 0表示无效，1表示右侧找到黑域-1表示左侧找到黑域     
+使用示例     find_jump_whitepoint_from_lefttoright();
+备注信息     无
+-------------------------------------------------------------------------------------------------------------------
+*/
+void find_y_blackpoint(void)
+{
+    bool leftfind=false;
+    bool rightfind=false;
+    for(int i=0;i<MT9V03X_W-1;i++)
+    {
+        if(white_point_count[i]>0&&white_point_count[i+1]==0&&rightfind==false)
+        {
+            rightfind=true;
+            rightblackpoint_index=i;
+        }
+    }
+    for(int i=MT9V03X_W-1;i>0;i--)
+    {
+        if(white_point_count[i]>0&&white_point_count[i-1]==0&&leftfind==false)
+        {
+            leftfind=true;
+            leftblackpoint_index=i;
+        }
+
+    }
+    if((rightfind && leftfind)||(!rightfind&&!leftfind))
+    {
+        leftorright= 0;
+    }
+    else if(rightfind && !leftfind)
+    {
+        leftorright= 1;           //找到右边黑列
+    }
+    else if(leftfind&&!rightfind)
+    {
+        leftorright= -1;        //找到左侧黑列
+    }
+}
+/*
+-------------------------------------------------------------------------------------------------------------------
+函数简介    图象y点处理
+参数说明     无
+返回参数     white_y_point
+使用示例     find_y_point();
+备注信息     无
+-------------------------------------------------------------------------------------------------------------------
+*/  
+void find_y_point(void)
+{
+    
+    if(leftorright==1)    //往左找，找y最右点
+    {
+        for(int i=rightblackpoint_index;i>0;i--)
+        {
+            bool bigbreak=false;
+            bool left_flag=false;
+            bool right_flag=false;   
+            for(int j=1;i+j<=MT9V03X_W-1;j++)
+            {
+                if(white_point_count[i]==white_point_count[i+j])
+                {
+                    continue;
+                }
+                if(white_point_count[i]<white_point_count[i+j])
+                {
+                    right_flag=true;
+                    break;
+                }
+                if(white_point_count[i]>white_point_count[i+j])
+                {
+                    bigbreak=true;          //如果不满足就去下一个点吧
+                    break;
+                }
+            }
+            if(bigbreak){continue;}//节约资源直接跳过过
+            for(int j=1;i-j>=0;j++)
+            {
+                if(white_point_count[i]==white_point_count[i-j])
+                {
+                    continue;
+                }
+                if(white_point_count[i]<white_point_count[i-j])
+                {
+                    left_flag=true;
+                    break;
+                }
+                if(white_point_count[i]>white_point_count[i-j])
+                {
+                    bigbreak=true;          //如果不满足就去下一个点吧
+                    break;
+                }
+
+            }
+            
+            if(bigbreak){continue;}//节约资源直接跳过过
+            if(right_flag&&left_flag)
+            {
+                white_y_point=i;//找到了最右侧的y点
+            }
+
+        }
+    }
+    if(leftorright==-1)   //往右找，找y最左点
+    {
+        for(int i=leftblackpoint_index;i<MT9V03X_W-1;i++)
+        {
+            bool bigbreak=false;
+            bool left_flag=false;
+            bool right_flag=false;  
+            for(int j=1;i-j>=0;j++)
+            {
+                if(white_point_count[i]==white_point_count[i-j])
+                {
+                    continue;
+                }
+                if(white_point_count[i]<white_point_count[i-j])
+                {
+                    left_flag=true;
+                    break;
+                }
+                if(white_point_count[i]>white_point_count[i-j])
+                {
+                    bigbreak=true;          //如果不满足就去下一个点吧
+                    break;
+                }
+
+            } 
+            
+            if(bigbreak){continue;}//节约资源直接跳过过
+
+            for(int j=1;i+j<=MT9V03X_W-1;j++)
+            {
+                if(white_point_count[i]==white_point_count[i+j])
+                {
+                    continue;
+                }
+                if(white_point_count[i]<white_point_count[i+j])
+                {
+                    right_flag=true;
+                    break;
+                }
+                if(white_point_count[i]>white_point_count[i+j])
+                {
+                    bigbreak=true;          //如果不满足就去下一个点吧
+                    break;
+                }
+            }
+            if(bigbreak){continue;}//节约资源直接跳过过
+            if(right_flag&&left_flag)
+            {
+                white_y_point=i;//找到了最左侧的y点
+            }
+
+        }
+    }
+}
 /*-------------------------------------------------------------------------------------------------------------------
 函数简介     从左往右寻找白线跳变点
 参数说明     无
@@ -366,27 +544,6 @@ void param_init(void)
 备注信息     无
 -------------------------------------------------------------------------------------------------------------------
 */
-
-int16 Threshold= 4 ;
-int16 Thresholdnum=10;
-/*
--------------------------------------------------------------------------------------------------------------------
-函数简介    图象稳定点处理
-参数说明     无
-返回参数     无
-使用示例     find_stable_whitepoint();
-备注信息     无
--------------------------------------------------------------------------------------------------------------------
-*/  
-int16 white_stable_point=0;
-void find_stable_whitepoint(void)
-{
-    white_stable_point=0;
-    for(int16 i=left_start_point;i<right_start_point;i++)
-    {
-
-    }
-}
 void find_jump_whitepoint(void)
 {
     int16 count=0;
@@ -500,25 +657,70 @@ void image_boundary_process2(void)
 //        }
 //    }
 //    
+    if(leftorright==0)
+    {
+        for(int16 i=left_start_point;i<right_start_point;i+=1)       //寻找最长左白列
+        {
+
+            if(white_point_count1[i]>left_longest[0])
+            {
+                left_longest[0]=white_point_count1[i];           
+                left_longest[1]=i;
+            }
+        }
+        for(int16 i=right_start_point;i>left_start_point;i-=1)       //寻找最  长右白列
+        {
+
+            if(white_point_count1[i]>right_longest[0]) 
+            {
+                right_longest[0]=white_point_count1[i];         
+                right_longest[1]=i;
+            }
+        }
+    }
+    else if(leftorright==1) //如果是右侧找y点
+    {
+        for(int16 i=rightblackpoint_index;i<MT9V03X_W-1;i+=1)       //寻找最长左白列
+        {
+
+            if(white_point_count1[i]>left_longest[0])
+            {
+                left_longest[0]=white_point_count1[i];           
+                left_longest[1]=i;
+            }
+        }
+        for(int16 i=MT9V03X_W-1;i>rightblackpoint_index;i-=1)       //寻找最  长右白列
+        {
+
+            if(white_point_count1[i]>right_longest[0]) 
+            {
+                right_longest[0]=white_point_count1[i];         
+                right_longest[1]=i;
+            }
+        }
+    }
+    else if(leftorright==-1) //如果是左侧找y点
+    {
+        for(int16 i=leftblackpoint_index;i>=0;i-=1)       //寻找最长左白列
+        {
+
+            if(white_point_count1[i]>left_longest[0])
+            {
+                left_longest[0]=white_point_count1[i];           
+                left_longest[1]=i;
+            }
+        }
+        for(int16 i=0;i<leftblackpoint_index;i+=1)       //寻找最  长右白列
+        {
+
+            if(white_point_count1[i]>right_longest[0]) 
+            {
+                right_longest[0]=white_point_count1[i];         
+                right_longest[1]=i;
+            }
+        }
+    }
     
-    for(int16 i=left_start_point;i<right_start_point;i+=1)       //寻找最长左白列
-    {
-
-        if(white_point_count1[i]>left_longest[0])
-        {
-            left_longest[0]=white_point_count1[i];           
-            left_longest[1]=i;
-        }
-    }
-    for(int16 i=right_start_point;i>left_start_point;i-=1)       //寻找最  长右白列
-    {
-
-        if(white_point_count1[i]>right_longest[0]) 
-        {
-            right_longest[0]=white_point_count1[i];         
-            right_longest[1]=i;
-        }
-    }
 
     search_stop=(right_longest[0]< left_longest[0])?(MT9V03X_H-right_longest[0]-1):(MT9V03X_H-1-left_longest[0]); //由于是从屏幕下往上，所以是选大的
     if(search_stop==-1)
@@ -1271,9 +1473,13 @@ void lenthen_Left_bondarise(int16 start)
     float dx_average=(dx1[0]+dx1[1]+dx1[2]+dx1[3]+dx1[4])/5;
     for(int16 i=start;i<MT9V03X_H-1;i++)
     {
-        if((float)leftline[start]+(float)(dx_average*(i-start))<0||(float)leftline[start]+dx_average*(float)(i-start)>(float)MT9V03X_W)
+        if((float)leftline[start]+(float)(dx_average*(i-start))<0)
         {
-            break;
+            leftfollowline[i]=0;
+        }
+        else if((float)leftline[start]+dx_average*(float)(i-start)>(float)MT9V03X_W-2)
+        {
+            leftfollowline[i]=MT9V03X_W-1;
         }
         else
         {
@@ -1299,9 +1505,13 @@ void lenthen_Right_bondarise(int16 start)
     float dx_average=(dx2[0]+dx2[1 ]+dx2[2]+dx2[3]+dx2[4])/5;
     for(int16 i=start;i<MT9V03X_H-1;i++)
     {
-        if((float)rightline[start]+dx_average*(i-start)>MT9V03X_W-5||(float)rightline[start]+dx_average*(float)(i-start)<0)
+        if((float)rightline[start]+dx_average*(i-start)>MT9V03X_W-2)
         {
-            break;
+            rightfollowline[i]=MT9V03X_W-1;
+        }
+        else if((float)rightline[start]+dx_average*(float)(i-start)<0)
+        {
+            rightfollowline[i]=0;
         }
         else 
         {
@@ -1309,7 +1519,7 @@ void lenthen_Right_bondarise(int16 start)
         }
     }
 }
-    /*
+/*
 ------------------------------------------------------------------------------------------------------------------
 函数简介     自下而上补左线
 参数说明     起点
@@ -1317,50 +1527,57 @@ void lenthen_Right_bondarise(int16 start)
 使用示例     
 备注信息     
 -------------------------------------------------------------------------------------------------------------------
-*/  
-void shorten_Left_bondarise1(int16 start)
+*/
+void lenthen_Left_bondarise_bottom(int16 start)
 {
     if(start<0){start=0;}
     if(start>MT9V03X_H-8){start=MT9V03X_H-8;}
-    float dx=(float)(leftline[start]-leftline[start+7])/7;
-    dx1_left_average(dx);
-    float dx_average=(dx1[0]+dx1[1]+dx1[2]+dx1[3]+dx1[4])/5;
-    for(int16 i=start;i>0;i--)
+    float dx=(float)(leftline[start]-leftline[start+5])/5;
+    for(int16 i=start;i>=0;i--)
     {
-        if((float)leftline[start]+(float)(dx_average*(start-i))<0||(float)leftline[start]+dx_average*(float)(start-i)>(float)MT9V03X_W)
+        if((float)leftline[start]+(float)(dx*(i-start))<0)
         {
-            break;
+            leftfollowline[i]=0;
+        }
+        else if((float)leftline[start]+dx*(float)(i-start)>(float)MT9V03X_W-2)
+        {
+            leftfollowline[i]=MT9V03X_W-1;
         }
         else
         {
-            leftfollowline[i]=(int16)((float)leftline[start]+dx_average*(float)(start-i));
+            leftfollowline[i]=(int16)((float)leftline[start]+dx*(float)(i-start));
         }
     }
 }
-/*------------------------------------------------------------------------------------------------------------------
-函数简介     自下而上补右线 
+
+/*
+------------------------------------------------------------------------------------------------------------------
+函数简介     自下而上补右线
 参数说明     起点
 返回参数     无
-使用示例
-备注信息
+使用示例      
+备注信息     
 -------------------------------------------------------------------------------------------------------------------
-*/
-void shorten_Right_bondarise1(int16 start)
+*/  
+void lenthen_Right_bondarise_bottom(int16 start)  
 {
     if(start<0){start=0;}
     if(start>MT9V03X_H-8){start=MT9V03X_H-8;}
-    float dx=(float)(rightline[start]-rightline[start+7])/7;
-    dx2_right_average(dx);
-    float dx_average=(dx2[0]+dx2[1]+dx2[2]+dx2[3]+dx2[4])/5;
-    for(int16 i=start;i>0;i--)
+    float dx=(float)(rightline[start]-rightline[start+5])/5;
+
+    for(int16 i=start;i>=0;i--)
     {
-        if((float)rightline[start]+(float)(dx_average*(start-i))<0||(float)rightline[start]+dx_average*(float)(start-i)>(float)MT9V03X_W)
+        if((float)rightline[start]+dx*(i-start)>MT9V03X_W-2)
         {
-            break;
+            rightfollowline[i]=MT9V03X_W-1;
         }
-        else
+        else if((float)rightline[start]+dx*(float)(i-start)<0)
         {
-            rightfollowline[i]=(int16)((float)rightline[start]+dx_average*(float)(start-i));
+            rightfollowline[i]=0;
+        }
+        else 
+        {
+            rightfollowline[i]=(int16)((float)rightline[start]+dx*(float)(i-start));
         }
     }
 }

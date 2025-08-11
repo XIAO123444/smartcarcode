@@ -135,7 +135,7 @@ int main(void)
             image_threshold = my_adapt_threshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H); // 图像获取
             set_b_imagine(image_threshold);        // 二值化
             image_boundary_process2();              // 图像边界处理
-            element_check();                        // 元素检查
+            if(encodercounter1>70000){element_check(); }              // 元素检查
             Velocity_Control();       // 速度控制    
             if(current_state == 1)
             {
