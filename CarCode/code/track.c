@@ -401,16 +401,16 @@ void element_check(void) {
         return; 
     }
     }
-    //圆环判断
-         if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
-         && Right_Down_Find!=0&&right_budandiao>10
-         &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
-     &&rightlostpoint[0]<70)  
-     //左连续性，右连续性判断，右下角点找到，右不单调点找到，左线点数大于70，同时丢线数小于10，右丢线点数大于30右丢线点数小于70（可部分删去冗余条件）
-     {
-         carstatus_now=round_1;
-         return;
-     }
+    // //圆环判断
+    //      if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
+    //      && Right_Down_Find!=0&&right_budandiao>10
+    //      &&leftline_num>70&&bothlostpoint[0]<10&&rightlostpoint[0]>30
+    //  &&rightlostpoint[0]<70)  
+    //  //左连续性，右连续性判断，右下角点找到，右不单调点找到，左线点数大于70，同时丢线数小于10，右丢线点数大于30右丢线点数小于70（可部分删去冗余条件）
+    //  {
+    //      carstatus_now=round_1;
+    //      return;
+    //  }
     ips200_show_string(0,300,"straig");
   }
 

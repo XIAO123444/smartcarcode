@@ -376,238 +376,88 @@ void param_init(void)
 
 int16 Threshold= 4 ;
 int16 Thresholdnum=10;
-/*-------------------------------------------------------------------------------------------------------------------
-函数简介     从中间往两边寻找黑区域
-参数说明     无
-返回参数     int8 leftoright 0表示无效，1表示右侧找到黑域-1表示左侧找到黑域     
-使用示例     find_jump_whitepoint_from_lefttoright();
-备注信息     无
--------------------------------------------------------------------------------------------------------------------
-*/
-void find_y_blackpoint(void)
-{
-    bool leftfind=false;
-    bool rightfind=false;
-    for(int i=0;i<MT9V03X_W-1;i++)
-    {
-        if(white_point_count[i]>0&&white_point_count[i+1]==0&&rightfind==false)
-        {
-            rightfind=true;
-            rightblackpoint_index=i;
-        }
-    }
-    for(int i=MT9V03X_W-1;i>0;i--)
-    {
-        if(white_point_count[i]>0&&white_point_count[i-1]==0&&leftfind==false)
-        {
-            leftfind=true;
-            leftblackpoint_index=i;
-        }
 
-    }
-    if((rightfind && leftfind)||(!rightfind&&!leftfind))
-    {
-        leftorright= 0;
-    }
-    else if(rightfind && !leftfind)
-    {
-        leftorright= 1;           //找到右边黑列
-    }
-    else if(leftfind&&!rightfind)
-    {
-        leftorright= -1;        //找到左侧黑列
-    }
-}
 /*
 -------------------------------------------------------------------------------------------------------------------
 函数简介    图象y点处理
 参数说明     无
-返回参数     white_y_point
+返回参数     white_y_point;leftorright;(1在右，-1在左)
 使用示例     find_y_point();
 备注信息     无
 -------------------------------------------------------------------------------------------------------------------
 */  
 void find_y_point(void)
 {
-    
-    if(leftorright==1)    //往左找，找y最右点
+    for(int i=15;i<MT9V03X_W-16;i++)
     {
-        for(int i=rightblackpoint_index;i>0;i--)
+        bool bigbreak=false;
+        leftblackpoint_index=-1;
+        rightblackpoint_index=-1;
+        for(int j=1;i-j>=0&&j<16;j++)//向左找
         {
-            bool bigbreak=false;
-            bool left_flag=false;
-            bool right_flag=false;   
-            for(int j=1;i+j<=MT9V03X_W-1;j++)
+            if(white_point_count[i]>white_point_count[i-j])
             {
-                if(white_point_count[i]==white_point_count[i+j])
-                {
-                    continue;
-                }
-                if(white_point_count[i]<white_point_count[i+j])
-                {
-                    right_flag=true;
-                    break;
-                }
-                if(white_point_count[i]>white_point_count[i+j])
-                {
-                    bigbreak=true;          //如果不满足就去下一个点吧
-                    break;
-                }
-            }
-            if(bigbreak){continue;}//节约资源直接跳过过
-            for(int j=1;i-j>=0;j++)
-            {
-                if(white_point_count[i]==white_point_count[i-j])
-                {
-                    continue;
-                }
-                if(white_point_count[i]<white_point_count[i-j])
-                {
-                    left_flag=true;
-                    break;
-                }
-                if(white_point_count[i]>white_point_count[i-j])
-                {
-                    bigbreak=true;          //如果不满足就去下一个点吧
-                    break;
-                }
-
-            }
-            
-            if(bigbreak){continue;}//节约资源直接跳过过
-            if(right_flag&&left_flag)
-            {
-                white_y_point=i;//找到了最右侧的y点
-            }
-
-        }
-    }
-    if(leftorright==-1)   //往右找，找y最左点
-    {
-        for(int i=leftblackpoint_index;i<MT9V03X_W-1;i++)
-        {
-            bool bigbreak=false;
-            bool left_flag=false;
-            bool right_flag=false;  
-            for(int j=1;i-j>=0;j++)
-            {
-                if(white_point_count[i]==white_point_count[i-j])
-                {
-                    continue;
-                }
-                if(white_point_count[i]<white_point_count[i-j])
-                {
-                    left_flag=true;
-                    break;
-                }
-                if(white_point_count[i]>white_point_count[i-j])
-                {
-                    bigbreak=true;          //如果不满足就去下一个点吧
-                    break;
-                }
-
+                bigbreak=true;
+                break;
             } 
+            if(white_point_count[i]<white_point_count[i-j]&&white_point_count[i]<white_point_count[i-j-3])
+            {
+                leftblackpoint_index=i-j+1;
+                break;
+            }
+
+        }
+        if(bigbreak)
+        {
+            continue;
+        }
+        for(int j=1;i+j<=MT9V03X_W-1&&j<16;j++)
+        {
+            if(white_point_count[i]>white_point_count[i+j])
+            {
+                bigbreak=true; 
+                break;
+            }
+            if(white_point_count[i]<white_point_count[i+j]&&white_point_count[i]<white_point_count[i+j+3])
+            {
+                rightblackpoint_index=i+j-1;
+                break;
+            }
+
+        }
+        if(bigbreak)
+        {
+            continue;
+        }
+        if(leftblackpoint_index!=-1&&rightblackpoint_index!=-1&&leftblackpoint_index>15&&rightblackpoint_index<MT9V03X_W-16)
+        {
             
-            if(bigbreak){continue;}//节约资源直接跳过过
-
-            for(int j=1;i+j<=MT9V03X_W-1;j++)
-            {
-                if(white_point_count[i]==white_point_count[i+j])
-                {
-                    continue;
-                }
-                if(white_point_count[i]<white_point_count[i+j])
-                {
-                    right_flag=true;
-                    break;
-                }
-                if(white_point_count[i]>white_point_count[i+j])
-                {
-                    bigbreak=true;          //如果不满足就去下一个点吧
-                    break;
-                }
-            }
-            if(bigbreak){continue;}//节约资源直接跳过过
-            if(right_flag&&left_flag)
-            {
-                white_y_point=i;//找到了最左侧的y点
-            }
-
+            break;
         }
     }
-}
-/*-------------------------------------------------------------------------------------------------------------------
-函数简介     从左往右寻找白线跳变点
-参数说明     无
-返回参数     无
-使用示例     find_jump_whitepoint_from_lefttoright();
-备注信息     无
--------------------------------------------------------------------------------------------------------------------
-*/
-void find_jump_whitepoint(void)
-{
-    int16 count=0;
-    int16 count1=0;
-    int16 Find_FromLeftToRight[10][2]={{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}}; //存储从左往右寻找的跳变点，第一项为从左往右找到的起点，
-    int16 Find_FromRightToLeft[10][2]={{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}}; //存储从右往左寻找的跳变点，第一项为从右往左找到的起点，
-    //从左往右
-    for(int16 i=0;i<=MT9V03X_W-2;i++)//防止越界
+
+    int right_interg=white_point_count[rightblackpoint_index+1]+white_point_count[rightblackpoint_index+2]+
+        white_point_count[rightblackpoint_index+3]+white_point_count[rightblackpoint_index+4]+white_point_count[rightblackpoint_index+8]
+    -white_point_count[rightblackpoint_index]*5;
+    int left_interg =white_point_count[leftblackpoint_index-1]+white_point_count[leftblackpoint_index-2]
+        +white_point_count[leftblackpoint_index-3]+white_point_count[leftblackpoint_index-4]+white_point_count[leftblackpoint_index-8]   
+    -white_point_count[leftblackpoint_index]*5;
+    if(left_interg>right_interg)
     {
-        if(Find_FromLeftToRight[count][0]==-1)
-        {
-            if(white_point_count[i]-white_point_count[i+1]<-Threshold) //如果当前点的白点数小于下一个点的白点数
-            {
-                Find_FromLeftToRight[count][0]=i; //存储当前点
-            }
-        }
-        else
-        {
-            if(white_point_count[i]-white_point_count[i+1]>Threshold&&i-Find_FromLeftToRight[count][0]<Thresholdnum) //如果当前点的白点数大于下一个点的白点数
-            {
-                Find_FromLeftToRight[count][1]=i+1; //存储当前点
-                count++;
-            }
-        }
+        white_y_point=leftblackpoint_index;
+        leftorright=-1;
     }
-    //从右往左
-    for(int16 i=MT9V03X_W-1;i>=1;i--)//从右往左寻找
+    else if(left_interg<right_interg)
     {
-        if(Find_FromRightToLeft[count][0]==-1)
-        {
-            if(white_point_count[i]-white_point_count[i-1]<-Threshold) //如果当前点的白点数小于下一个点的白点数
-            {
-                Find_FromRightToLeft[count][0]=i; //存储当前点
-            }
-        }
-        else
-        {
-            if(white_point_count[i]-white_point_count[i-1]>Threshold&&Find_FromRightToLeft[count][0]-i<Thresholdnum) //如果当前点的白点数大于下一个点的白点数
-            {
-                Find_FromRightToLeft[count][1]=i-1; //存储当前点
-                count1++;
-            }
-        }
+        white_y_point=rightblackpoint_index;
+        leftorright=1;
+    }
+    else
+    {
+        leftorright=0;
     }
     
-    for(int i=0;i<count;i++)
-    {
-        int16 whitecount=(white_point_count[Find_FromLeftToRight[i][1]+1]+white_point_count[Find_FromLeftToRight[i][0]])/2; //计算白点数平均值
-        for (int j=Find_FromLeftToRight[i][0];j<=Find_FromLeftToRight[i][1];j++)
-        {
-            white_point_count1[j]=whitecount; //将平均值赋值给白点计数
-        }        
-    }
-    for (int i = 0; i < count1; i++)
-    {
-        int16 whitecount=(white_point_count[Find_FromRightToLeft[i][1]]+white_point_count[Find_FromRightToLeft[i][0]])/2; //计算白点数平均值
-        for(int j=Find_FromRightToLeft[i][0];j>Find_FromRightToLeft[i][1];j--)
-        {
-            white_point_count1[j]=whitecount; //将平均值赋值给白点计数
-        }
-    }
     
-
-
 }
 
 void image_boundary_process2(void)
@@ -630,35 +480,11 @@ void image_boundary_process2(void)
         }
     }
     memcpy(white_point_count1, white_point_count, sizeof(white_point_count)); //将白点计数复制到白点计数滤波1
-    find_jump_whitepoint(); //寻找白线跳变点
-    //寻找最长白列
-//    for(int16 i=left_start_point+5;i<right_start_point-5;i+=3)       //寻找最长左白列
-//    {
-//        if(white_point_count[i]>white_point_count[i-5]&&white_point_count[i]>white_point_count[i+5])
-//        {
-//            continue;
-//        }
-//        if(white_point_count[i]>left_longest[0])
-//        {
-//            left_longest[0]=white_point_count[i];           
-//            left_longest[1]=i;
-//        }
-//    }
-//    for(int16 i=right_start_point-5;i>left_start_point+5;i-=3)       //寻找最  长右白列
-//    {
-//        if(white_point_count[i]>white_point_count[i-5]&&white_point_count[i]>white_point_count[i+5])
-//        {
-//            continue;
-//        }
-//        if(white_point_count[i]>right_longest[0]) 
-//        {
-//            right_longest[0]=white_point_count[i];         
-//            right_longest[1]=i;
-//        }
-//    }
-//    
+    find_y_point(); 
     if(leftorright==0)
     {
+        ips200_show_string(0,240,"middle");
+        ips200_show_int(60,240,0,3);
         for(int16 i=left_start_point;i<right_start_point;i+=1)       //寻找最长左白列
         {
 
@@ -680,7 +506,9 @@ void image_boundary_process2(void)
     }
     else if(leftorright==1) //如果是右侧找y点
     {
-        for(int16 i=rightblackpoint_index;i<MT9V03X_W-1;i+=1)       //寻找最长左白列
+        ips200_show_string(0,240,"right ");
+        ips200_show_int(60,240,white_y_point,3);
+        for(int16 i=white_y_point;i<MT9V03X_W-1;i+=1)       //寻找最长左白列
         {
 
             if(white_point_count1[i]>left_longest[0])
@@ -689,7 +517,7 @@ void image_boundary_process2(void)
                 left_longest[1]=i;
             }
         }
-        for(int16 i=MT9V03X_W-1;i>rightblackpoint_index;i-=1)       //寻找最  长右白列
+        for(int16 i=MT9V03X_W-1;i>white_y_point;i-=1)       //寻找最  长右白列
         {
 
             if(white_point_count1[i]>right_longest[0]) 
@@ -701,7 +529,9 @@ void image_boundary_process2(void)
     }
     else if(leftorright==-1) //如果是左侧找y点
     {
-        for(int16 i=leftblackpoint_index;i>=0;i-=1)       //寻找最长左白列
+                ips200_show_string(0,240,"left ");
+        ips200_show_int(60,240,white_y_point,3);
+        for(int16 i=white_y_point;i>=0;i-=1)       //寻找最长左白列
         {
 
             if(white_point_count1[i]>left_longest[0])
@@ -710,7 +540,7 @@ void image_boundary_process2(void)
                 left_longest[1]=i;
             }
         }
-        for(int16 i=0;i<leftblackpoint_index;i+=1)       //寻找最  长右白列
+        for(int16 i=0;i<white_y_point;i+=1)       //寻找最  长右白列
         {
 
             if(white_point_count1[i]>right_longest[0]) 
@@ -1259,7 +1089,7 @@ int16 continuity_left(uint8 start,uint8 end)
     }
     for(i=start;i>=end;i--)
     {
-        if(abs(leftline[i]-leftline[i-1])>=7)//连续性阈值是5，可更改
+        if(abs(leftline[i]-leftline[i-1])>=5)//连续性阈值是5，可更改
        {
 
             continuity_change_flag=i;                                         //在i处不连续了
