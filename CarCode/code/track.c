@@ -50,6 +50,29 @@ extern int16 left_up_guai[2];      // 左上拐点
 int16 continuity_pointLeft[2]={0,0}; // 左不连续点[0]存某行，[1]存某列
 int16 continuity_pointRight[2]={0,0}; // 右不连续点 [0]存某行，[1]存某列
 
+uint8 traceL[MT9V03X_H]=
+{0,71,71,69,69,69,69,67,65,65,63,63,63,63,61,61,
+59,59,59,59,57,57,55,55,55,55,53,53,53,51,51,51,
+49,49,49,47,47,47,45,45,43,43,43,41,41,41,39,39,
+39,37,37,37,35,35,33,33,33,31,31,31,29,29,29,27,
+27,25,25,25,23,23,23,21,21,21,19,19,19,17,17,17,
+15,15,13,13,13,11,11,11,9,9};
+uint8 traceR[MT9V03X_H]=
+{
+159,88,88,90,90,90,90,92,94,94,96,96,96,96,98,98,
+100,100,100,100,102,102,104,104,104,104,106,106,106,108,108,108,
+110,110,110,112,112,112,114,114,116,116,116,118,118,118,120,120,
+120,122,122,122,124,124,126,126,126,128,128,128,130,130,130,132,
+132,134,134,134,136,136,136,138,138,138,140,140,140,142,142,142,
+144,144,146,146,146,148,148,148,150,150};
+
+uint8 trace_middle[MT9V03X_H]=
+{159,17,17,21,21,21,21,25,29,29,33,33,33,33,37,37,
+41,41,41,41,45,45,49,49,49,49,53,53,53,57,57,57,
+61,61,61,65,65,65,69,69,73,73,73,77,77,77,81,81,
+81,85,85,85,89,89,93,93,93,97,97,97,101,101,101,105,
+105,109,109,109,113,113,113,117,117,117,121,121,121,125,125,125,
+129,129,133,133,133,137,137,137,141,141};
 //加权控制
 const uint8 Weight[MT9V03X_H]=
 {
@@ -356,7 +379,7 @@ void element_check(void) {
     // 更新左右跟踪线 
     memcpy(leftfollowline, leftline, sizeof(leftline));
     memcpy(rightfollowline, rightline, sizeof(rightline));
-    
+
     centerline2_change();
     Find_Up_Point(MT9V03X_H-1, search_stop); // 查找上半段边界点
     Find_Down_Point(MT9V03X_H-1, search_stop); //查找下半段边界点
@@ -371,36 +394,28 @@ void element_check(void) {
     ips200_show_string(70,300,"r_up");
     ips200_show_int(120,300,Right_Up_Find,3);
 
-//     printf("rightup%d,leftup%d\n", Right_Up_Find, Left_Up_Find);
-//    printf("rightdown%d,leftdown%d\n", Right_Down_Find, Left_Down_Find);
-
 ////    /*---------- 直道状态检测 ----------*/
-  if(carstatus_now == straight) {
-
-		//右圆环↓↓↓↓↓↓↓
-		//圆环↓↓↓↓↓↓↓ 
-		//圆环↓↓↓↓↓↓↓
-		//圆环↓↓↓↓↓↓↓
-
-
-    if(search_stop<13){
-    if(continuity_pointLeft[0] != 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0 && Left_Up_Find != 0&&(Right_Up_Find>search_stop-2&&Left_Up_Find>search_stop-2))//左不连续点找到 且右不连续点找到，且左上拐点找到且右上拐点找到，此时为正入十字
+    if(carstatus_now == straight) 
     {
-        carstatus_now = crossroad; // 进入十字路口状态
-        return;
-    }
-    if(continuity_pointLeft[0] != 0&&continuity_pointRight[0] == 0 && Left_Up_Find != 0&&Left_Up_Find>search_stop-2)//左不连续点找到 且右不连续点未找到，且左上拐点找到，此时为左斜入十字
-    {
-        carstatus_now = crossroadL; // 进入十字路口状态
-        return;
-    }
+        if(search_stop<13)
+        {
+            if(continuity_pointLeft[0] != 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0 && Left_Up_Find != 0&&(Right_Up_Find>search_stop-2&&Left_Up_Find>search_stop-2))//左不连续点找到 且右不连续点找到，且左上拐点找到且右上拐点找到，此时为正入十字
+            {
+                carstatus_now = crossroad; // 进入十字路口状态
+                return;
+            }
+            if(continuity_pointLeft[0] != 0&&continuity_pointRight[0] == 0 && Left_Up_Find != 0&&Left_Up_Find>search_stop-2)//左不连续点找到 且右不连续点未找到，且左上拐点找到，此时为左斜入十字
+            {
+                carstatus_now = crossroadL; // 进入十字路口状态
+                return;
+            }
 
-    if(continuity_pointLeft[0] == 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0&&Right_Up_Find>search_stop-2)//左不连续点未找到 右不连续点找到，且右上拐点找到，此时为右斜入十字
-    {
-        carstatus_now = crossroadR; // 进入十字路口状态
-        return; 
-    }
-    }
+            if(continuity_pointLeft[0] == 0 && continuity_pointRight[0] != 0 && Right_Up_Find != 0&&Right_Up_Find>search_stop-2)//左不连续点未找到 右不连续点找到，且右上拐点找到，此时为右斜入十字
+            {
+                carstatus_now = crossroadR; // 进入十字路口状态
+                return; 
+            }
+        }
     // //圆环判断
     //      if(continuity_left(10, MT9V03X_H-10)==0 &&continuity_right(10, MT9V03X_H-10)
     //      && Right_Down_Find!=0&&right_budandiao>10
@@ -412,7 +427,7 @@ void element_check(void) {
     //      return;
     //  }
     ips200_show_string(0,300,"straig");
-  }
+    }
 
 //    /*---------- 十字路口状态处理 ----------*/
   if(carstatus_now == crossroad) {

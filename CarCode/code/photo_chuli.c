@@ -436,10 +436,10 @@ void find_y_point(void)
         }
     }
 
-    int right_interg=white_point_count[rightblackpoint_index+1]+white_point_count[rightblackpoint_index+2]+
+    int16 right_interg=white_point_count[rightblackpoint_index+1]+white_point_count[rightblackpoint_index+2]+
         white_point_count[rightblackpoint_index+3]+white_point_count[rightblackpoint_index+4]+white_point_count[rightblackpoint_index+8]
     -white_point_count[rightblackpoint_index]*5;
-    int left_interg =white_point_count[leftblackpoint_index-1]+white_point_count[leftblackpoint_index-2]
+    int16 left_interg =white_point_count[leftblackpoint_index-1]+white_point_count[leftblackpoint_index-2]
         +white_point_count[leftblackpoint_index-3]+white_point_count[leftblackpoint_index-4]+white_point_count[leftblackpoint_index-8]   
     -white_point_count[leftblackpoint_index]*5;
     if(left_interg>right_interg)
@@ -567,7 +567,6 @@ void image_boundary_process2(void)
         {
             difsum_left1(row,left_longest[1]); //使用最长白列的起点作为起点寻找左线
             difsum_right1(row,right_longest[1]); //使用最长白列的起点作为起点寻找右线
-            centerline[row]=(rightline[row]+leftline[row])/2;		    
         }
         
         

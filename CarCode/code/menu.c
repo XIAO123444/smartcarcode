@@ -17,6 +17,8 @@ extern bool save_flag;      //保存标志位
 extern bool start_flag;     //发车标志位
 extern bool stop_flag1;     //停车标志位
 
+
+bool showline;
 int16 threshold_up;  //大津法阈值上限
 int16 threshold_down; //大津法阈值下限
 
@@ -43,6 +45,14 @@ void nfunc(void){
     ips200_show_string(0,280,"nofunc");
 
 }
+void sho1w_line(void)//展示边线方便放置摄像头
+{
+    showline=true;
+}
+void close_line(void)
+{
+    showline=false;
+}
 void start_car(void)
 {
     pidv_init();
@@ -53,10 +63,10 @@ void start_car(void)
 }
 void threshold_up_add(void)
 {
-    threshold_up+=1;
-    if(threshold_up>255)
+    threshold_up+=5;
+    if(threshold_up>600)
     {
-        threshold_up=255;
+        threshold_up=600;
     }
 }
 void threshold_up_sub(void)
@@ -69,10 +79,10 @@ void threshold_up_sub(void)
 }
 void threshold_down_add(void)
 {
-    threshold_down+=1;
-    if(threshold_down>255)
+    threshold_down+=5;
+    if(threshold_down>600)
     {
-        threshold_down=255;
+        threshold_down=600;
     }
 }
 void threshold_down_sub(void)
@@ -142,26 +152,19 @@ MENU menu[]={
         {2,"p",      ips200_x_max-10 * 7, 20,  0,0,1,  pid_sub_p,           pid_add_p,          nfunc},  
         {2,"i",      ips200_x_max-10 * 7, 40,  0,0,1,  pid_sub_i,           pid_add_i,          nfunc},  
         {2,"d",      ips200_x_max-10 * 7, 60,  0,0,1,  pid_sub_d,           pid_add_d,          nfunc},  
-
-
-        {2,"reset",  ips200_x_max-10 * 7, 140, 0,0,1,  pid_vparam_init, nfunc , nfunc},
+        {2,"reset",  ips200_x_max-10 * 7, 80, 0,0,1,  pid_vparam_init, nfunc , nfunc},
         {2,"encoder_right"  ,ips200_x_max-10*7,160,0,0,0,                nfunc,nfunc,nfunc},
         {2,"encoder_left"   ,ips200_x_max-10*7,180,0,0,0,                nfunc,nfunc,nfunc},
     {1,"pid_s_param",0,40,0,0,0,nfunc,nfunc,nfunc},
         {2,"p_S",         ips200_x_max-10 * 7, 20,  0,0,1,  S_PIDsub_p,           S_PIDadd_p,          nfunc},  
         {2,"i_S",         ips200_x_max-10 * 7, 40,  0,0,1,  S_PIDsub_i,           S_PIDadd_i,          nfunc},  
         {2,"d_S",         ips200_x_max-10 * 7, 60,  0,0,1,  S_PIDsub_d,           S_PIDadd_d,          nfunc},  
-        // {2,"outputmax", ips200_x_max-10 * 7, 80,  0,0,1,    S_PIDsub_outputmax,  S_PIDadd_outputmax,  nfunc},
-        // {2,"outputmin", ips200_x_max-10 * 7, 100, 0,0,0,    nfunc             ,  nfunc             ,  nfunc},
         {2,"reset_S",     ips200_x_max-10 * 7, 120, 0,0,1,  PID_init, nfunc , nfunc},
         {2,"P_S1",     ips200_x_max-10 * 7, 140, 0,0,1,    S_PID1sub_p             ,  S_PID1add_p             ,  nfunc},
         {2,"I_S1",     ips200_x_max-10 * 7, 160, 0,0,1,    S_PID1sub_i             ,  S_PID1add_i             ,  nfunc},
         {2,"D_S1",     ips200_x_max-10 * 7, 180, 0,0,1,    S_PID1sub_d             ,  S_PID1add_d             ,  nfunc},
-        // {2,"outputmax_S1", ips200_x_max-10 * 7, 200, 0,0,1,     S_PID1sub_outputmax             ,  S_PID1add_outputmax             ,  nfunc},
         {2,"reset_S1",     ips200_x_max-10 * 7, 220, 0,0,1,     PID2_init, nfunc , nfunc},
-
-
-    {1,"carstatue",0,60,0,0,0,nfunc,nfunc,nfunc},
+    {1,"CARstatus",0,60,0,0,0,nfunc,nfunc,nfunc},
 
         {2,"threshold_up"  ,ips200_x_max-10*7,60,0,0,0,                          threshold_up_sub,threshold_up_add,nfunc},
         {2,"threshold_down"   ,ips200_x_max-10*7,80,0,0,0,                       threshold_down_sub,threshold_down_add,nfunc},
@@ -169,10 +172,14 @@ MENU menu[]={
         {2,"forwardsight",   ips200_x_max-10 * 7 ,120 ,0,0,0, subforwardsight,           addforwardsight,          nfunc },
         {2,"forwardsight2",   ips200_x_max-10 * 7 ,140 ,0,0,0, subforwardsight2,           addforwardsight2,          nfunc },
         {2,"forwardsight3",   ips200_x_max-10 * 7 ,160 ,0,0,0, subforwardsight3,           addforwardsight3,          nfunc },
-        {2,"reset_C",     ips200_x_max-10 * 7, 180, 0,0,1,  car_init, nfunc , nfunc},
-    
+        {2,"reset_C",      ips200_x_max-10 * 7, 180, 0,0,1,  car_init, nfunc , nfunc},
+    {1,"setthecar",0,60,0,0,0,nfunc,nfunc,nfunc},
+        {2,"camera_open"  ,ips200_x_max-10*7,20,0,0,0,                         close_line,sho1w_line,nfunc},
+ 
 
-    {1,"START_THECAR",0,80,0,0,0,start_car,nfunc,nfunc},
+    {1,"element",0,100,0,0,0,nfunc,nfunc,nfunc},
+
+    {1,"START_THE_CAR",0,100,0,0,0,start_car,nfunc,nfunc},
 
 
 
