@@ -28,7 +28,7 @@ extern int forwardsight;
 extern int forwardsight2; // 前瞻2  
 extern int forwardsight3; // 前瞻3
 extern int encodercounter1;
-extern int image_threshold;
+extern int image_threshold; 
 extern int16 threshold_up;  //大津法阈值上限
 extern int16 threshold_down; //大津法阈值下限
 extern uint8 dis_image[MT9V03X_H][MT9V03X_W];

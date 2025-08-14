@@ -173,11 +173,9 @@ MENU menu[]={
         {2,"forwardsight2",   ips200_x_max-10 * 7 ,140 ,0,0,0, subforwardsight2,           addforwardsight2,          nfunc },
         {2,"forwardsight3",   ips200_x_max-10 * 7 ,160 ,0,0,0, subforwardsight3,           addforwardsight3,          nfunc },
         {2,"reset_C",      ips200_x_max-10 * 7, 180, 0,0,1,  car_init, nfunc , nfunc},
-    {1,"setthecar",0,60,0,0,0,nfunc,nfunc,nfunc},
+    {1,"setthecar",0,80,0,0,0,nfunc,nfunc,nfunc},
         {2,"camera_open"  ,ips200_x_max-10*7,20,0,0,0,                         close_line,sho1w_line,nfunc},
- 
-
-    {1,"element",0,100,0,0,0,nfunc,nfunc,nfunc},
+        {2,"element",0,40,0,0,0,nfunc,nfunc,nfunc},
 
     {1,"START_THE_CAR",0,100,0,0,0,start_car,nfunc,nfunc},
 

@@ -31,7 +31,7 @@ void Velocity_Control(void)//赛道类型判别，来选定速度
         }   
         if(car_situation==0)//直道 
         { 
-            speed_stragety=speed*2 ; 
+            speed_stragety=speed*1 ; 
             forwardsight_stragety=forwardsight;
             
         }
