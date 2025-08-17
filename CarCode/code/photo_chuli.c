@@ -279,7 +279,7 @@ void set_b_imagine(int threshold)
 void difsum_left1(uint8 y,uint8 x)
 	{
     uint8 col;//ÁĞ
-    uint8 mov = 2;//Ã¿´Î×÷²îºóµÄÒÆ¶¯Á¿,Ä¬ÈÏÎª2£¬¿ÉÒÔ¸ù¾İ»­Ãæ·Ö±æÂÊµ÷Õû
+    uint8 mov = 1; //Ã¿´Î×÷²îºóµÄÒÆ¶¯Á¿,Ä¬ÈÏÎª2£¬¿ÉÒÔ¸ù¾İ»­Ãæ·Ö±æÂÊµ÷Õû
     //¼ÆËãµÚxĞĞµÄ×ó±ß½ç
     leftline[y] = 0;//Î´ÕÒµ½×ó±ß½çÊ±Êä³öÎª0
     for(col = x; col >= mov + 1; col -= mov)
@@ -303,7 +303,7 @@ void difsum_left1(uint8 y,uint8 x)
 void difsum_right1(uint8 y,uint8 x)
 {
 	uint8 col;//ÁĞ
-    uint8 mov = 2;//Ã¿´Î×÷²îºóµÄÒÆ¶¯Á¿,Ä¬ÈÏÎª2£¬¿ÉÒÔ¸ù¾İ»­Ãæ·Ö±æÂÊµ÷Õû
+    uint8 mov = 1;//Ã¿´Î×÷²îºóµÄÒÆ¶¯Á¿,Ä¬ÈÏÎª2£¬¿ÉÒÔ¸ù¾İ»­Ãæ·Ö±æÂÊµ÷Õû
     //¼ÆËãµÚxĞĞµÄ×ó±ß½ç
     rightline[y] = MT9V03X_W-1;//Î´ÕÒµ½×ó±ß½çÊ±Êä³öÎª0
     for(col = x; col <= MT9V03X_W - mov - 1; col += mov)
@@ -380,7 +380,7 @@ int16 Thresholdnum=10;
 /*
 -------------------------------------------------------------------------------------------------------------------
 º¯Êı¼ò½é    Í¼Ïóyµã´¦Àí
-²ÎÊıËµÃ÷     ÎŞ
+²ÎÊıËµÃ÷     ÄÚÖÃ×óÆğµã£¬ÓÒÆğµã£¬¿ÉÒÔÔÚÔ²»·Ê±ºòÓÃ
 ·µ»Ø²ÎÊı     white_y_point;leftorright;(1ÔÚÓÒ£¬-1ÔÚ×ó)
 Ê¹ÓÃÊ¾Àı     find_y_point();
 ±¸×¢ĞÅÏ¢     ÎŞ
@@ -388,7 +388,7 @@ int16 Thresholdnum=10;
 */  
 void find_y_point(void)
 {
-    for(int i=15;i<MT9V03X_W-16;i++)
+    for(int i=left_start_point+15;i<right_start_point-15;i++)
     {
         bool bigbreak=false;
         leftblackpoint_index=-1;
@@ -429,7 +429,7 @@ void find_y_point(void)
         {
             continue;
         }
-        if(leftblackpoint_index!=-1&&rightblackpoint_index!=-1&&leftblackpoint_index>15&&rightblackpoint_index<MT9V03X_W-16)
+        if(leftblackpoint_index!=-1&&rightblackpoint_index!=-1&&leftblackpoint_index>left_start_point+15&&rightblackpoint_index<right_start_point-15)
         {
             
             break;
@@ -894,71 +894,66 @@ int16 Find_Left_Down_Point(int16 start,int16 end)//ÕÒ×óÏÂ½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµ
     return left_down_line;
 }
 /*-------------------------------------------------------------------------------------------------------------------
-  @brief     ÓÒÏÂ½Çµã¼ì²â
+  @brief     ÓÒÏÂ½Çµã¼ì²â£¨Ô²»·£©
   @param     ÆğÊ¼ĞĞ£¬ÖÕÖ¹ĞĞ
   @return    ·µ»Ø½ÇµãËùÔÚµÄĞĞÊı£¬ÕÒ²»µ½·µ»Ø0
   Sample     right_down_guai[0]=Find_Left_Down_Point(MT9V03X_H-1,20);
-  @note      ½Çµã¼ì²âãĞÖµ¿É¸ù¾İÊµ¼ÊÖµ¸ü¸Ä
+  @note      Õâ¸öĞÂÅĞ¶Ï¶ÔÍ¼ÏóµÄ¸É¾»³Ì¶ÈÒªÇó½Ï¸ß£¬½Çµã¼ì²âãĞÖµ¿É¸ù¾İÊµ¼ÊÖµ¸ü¸Ä
 -------------------------------------------------------------------------------------------------------------------*/
 int16 Find_Right_Down_Point(int16 start,int16 end)
 {
-    right_down_line=0;          //Ä¬ÈÏ0ÎªÃ»ÕÒµ½
-    if(start>MT9V03X_H-4)
-    {
-        start=MT9V03X_H-4;
-    }
-    if(end<5){end=5;}
-    if(start<end)
-    {
-        uint8 t=start;
-        start=end;
-        end=t;
-    }
-    for(int16 i=start;i>=end;i--)
-    {
-        if(Right_Down_Find==0&&//Ö»ÕÒµÚÒ»¸ö·ûºÏÌõ¼şµÄµã
-           abs(rightline[i]-rightline[i+1])<=5&&//½ÇµãµÄãĞÖµ¿ÉÒÔ¸ü¸Ä
-           abs(rightline[i+1]-rightline[i+2])<=5&&
-           abs(rightline[i+2]-rightline[i+3])<=5&&
-            rightline[i]<MT9V03X_W-1&&//ÓÒ±ß½çµã²»ÄÜÎªMT9V03X_W-1
-              ((rightline[i]-rightline[i-2])<=-3||rightline[i-2]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i-3])<=-5||rightline[i-3]>MT9V03X_W-2)&&
-              ((rightline[i]-rightline[i-4])<=-5||rightline[i-4]>MT9V03X_W-2))
-        {
-            right_down_line=i+2;
-            break;
-        }
-    }
-    return right_down_line;                                                         //ÔÚi´¦ÓĞ½Çµã
-}
-
-int16 Find_Right_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄĞĞÊı
-{
-    int i,t;
-    int right_up_line=0;
-    if(rightlostpoint[0]>=0.9*MT9V03X_H)//´ó²¿·Ö¶¼¶ªÏß£¬Ã»ÓĞ¹ÕµãÅĞ¶ÏµÄÒâÒå
-        return right_up_line;
+    int16 i,t;
+    int16 right_down_line=0;
     if(start<end)
     {
         t=start;
         start=end;
         end=t;
-    }    
-    if(end<=MT9V03X_H-search_stop)//ËÑË÷½ØÖ¹ĞĞÍùÉÏµÄÈ«¶¼²»ÅĞ
-        end=MT9V03X_H-search_stop;
-    if(end<=5)//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç
-        end=5;
-    if(start>=MT9V03X_H-1-5)
-        start=MT9V03X_H-1-5;
-    for(i=start;i>=end;i--)
+    }
+    if(start>MT9V03X_H-2)
     {
-        if(right_up_line==0&&//Ö»ÕÒµÚÒ»¸ö·ûºÏÌõ¼şµÄµã
-           abs(rightline[i]-rightline[i-1])<=5&&//ÏÂÃæÁ½ĞĞÎ»ÖÃ²î²»¶à
-           abs(rightline[i-1]-rightline[i-2])<=5&&  
-           abs(rightline[i-2]-rightline[i-3])<=5&&
-              (rightline[i]-rightline[i+2])<=-8&&
-              (rightline[i]-rightline[i+3])<=-15&&
-              (rightline[i]-rightline[i+4])<=-15)
+        start=MT9V03X_H-2;//ÏÂÃæ5ĞĞÉÏÃæ5ĞĞÊı¾İ²»ÎÈ¶¨£¬²»ÄÜ×÷Îª±ß½çµãÀ´ÅĞ¶Ï£¬ÉáÆú
+    }
+    if(end<4)
+    {
+        end=4;//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç    
+    }
+    if(rightline[start]>=MT9V03X_W-1&&rightline[start-1]>=MT9V03X_W-1&&rightline[start-2]>=MT9V03X_W-1&&rightline[start-3]>=MT9V03X_W-1)//Èç¹ûÆğÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓĞ¹ÕµãÅĞ¶ÏµÄÒâÒå
+    {
+        return 0;
+    }
+    for(int i=start;i>=end;i--)
+    {
+        if(((rightline[i]-rightline[i-2])<=-8||rightline[i-2]==MT9V03X_W-1)&&
+           ((rightline[i]-rightline[i-3])<=-15||rightline[i-3]==MT9V03X_W-1)&&
+           ((rightline[i]-rightline[i-4])<=-15||rightline[i-4]==MT9V03X_W-1))
+        {
+            right_down_line=i+1;//»ñÈ¡ĞĞÊı¼´¿É
+            break;
+        }
+    }
+    return right_down_line;
+}
+
+int16 Find_Right_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄĞĞÊı
+{
+    int16 i,t;
+    int16 right_up_line=0;
+    if(start>end)
+    {
+        t=start;
+        start=end;
+        end=t;
+    }    
+    if(start<=1)//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç
+    {start=1;}
+    if(end>=MT9V03X_H-1-4)
+    {end=MT9V03X_H-1-4;}
+    for(i=start;i<=end;i++)
+    {
+        if(((rightline[i]-rightline[i+2])<=-8||rightline[i+2]==MT9V03X_W-1)&&
+           ((rightline[i]-rightline[i+3])<=-15||rightline[i+3]==MT9V03X_W-1)&&
+           ((rightline[i]-rightline[i+4])<=-15||rightline[i+4]==MT9V03X_W-1))
         {
             right_up_line=i;//»ñÈ¡ĞĞÊı¼´¿É
             break;
@@ -1080,7 +1075,7 @@ int16 continuity_left(uint8 start,uint8 end)
     return continuity_change_flag;
 }
 //µ¥µ÷ĞÔ±ä»¯s
-int16 montonicity_right(uint8 start,uint8 end)
+int16 montonicity_right (uint8 start,uint8 end)
 {            
 
     int16 i;
@@ -1088,25 +1083,23 @@ int16 montonicity_right(uint8 start,uint8 end)
 
     if(start<end)
     {
-        int16 t=start;
+        uint8 t=start;
         start=end;
         end=t;
     }
     if(start>=MT9V03X_H-6)//Êı×éÔ½½ç±£»¤
         start=MT9V03X_H-6;
-    if(end<=5)
+    if(end<=6)//Õâ¸ö²»ÄÜ¸Ä
     {
-        end=5;
+        end=6;
     }
     for(i=end;i<=start;i++)
     {
 
-        if(rightline[i] <rightline[i+10]&&rightline[i] <rightline[i-10]
-        )
+        if(rightline[i] <rightline[i+5]&&rightline[i] <rightline[i-5]&&rightline[i+1]!=MT9V03X_W-1&&rightline[i-1]!=MT9V03X_W-1)
         {
             result=i;
-        return result;
-
+            return result;
         }
     }
     return 0;
@@ -1123,8 +1116,8 @@ int16 montonicity_left(uint8 start,uint8 end)
         start=end;
         end=t;
     }
-    if(start>=MT9V03X_H-5)//Êı×éÔ½½ç±£»¤
-        start=MT9V03X_H-5;
+    if(start>=MT9V03X_H-6)//Êı×éÔ½½ç±£»¤
+        start=MT9V03X_H-6;
     if(end<=5)
     {
         end=5;
@@ -1132,13 +1125,7 @@ int16 montonicity_left(uint8 start,uint8 end)
     for(i=start;i>=end;i--)
     {
 
-        if(leftline[i]-leftline[i-1]>=0&&leftline[i-1]-leftline[i-2]>=0&&leftline[i-2]-leftline[i-3]>=0
-            &&leftline[i]-leftline[i+1]>=0&&leftline[i+1]-leftline[i+2]>=0&&leftline[i+2]-leftline[i+3]>=0&&
-        leftline[i]!=0&&
-        leftline[i+1]!=0&&
-        leftline[i-1]!=0&&
-        leftline[i+2]!=0&&
-        leftline[i-2]!=0)
+        if(leftline[i] >leftline[i+5]&&leftline[i] >leftline[i-5])
         {
             result=i;
             return result;

@@ -28,7 +28,7 @@ void BUZZ_init(void)
 */
 void BUZZ_START(void)
 {
-    count_beep=40;
+    count_beep=7;
 }
 void BUZZ_cycle(void)
 {

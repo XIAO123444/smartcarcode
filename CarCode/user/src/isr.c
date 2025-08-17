@@ -228,7 +228,7 @@ void TIM6_IRQHandler (void)
         dutyr =outpute+turn2;
     }
     
-    motor_run(dutyr,dutyl );//�?  电机，左电机
+    motor_run(dutyl,dutyr );//�?  电机，左电机
     // 此�?�编写用户代�?
     TIM6->SR &= ~TIM6->SR;                                                      // 清空�?�?状�?
 }
