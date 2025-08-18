@@ -40,7 +40,7 @@ void banmaxian_check(void);
 void black_protect_check(void);
 
 int16 output_middle(void);
-int16 find_vpoint(int16 start,int16 end);
+int16   find_vpoint(int16 start,int16 end);
 
 
 void trace_right_bu(int16 start,int16 end);

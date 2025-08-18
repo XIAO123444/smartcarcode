@@ -372,7 +372,7 @@ void element_check(void) {
         if(Right_Up_Find)//ур╣╫ио╣Ц
         { 
             search_stop1=Right_Up_Find;
-            add_Lline_k(rightline[Right_Up_Find],Right_Up_Find,Right_Up_Find+20,leftline[Right_Up_Find+20]);
+            add_Lline_k(rightline[Right_Up_Find],Right_Up_Find,Right_Up_Find+30,leftline[Right_Up_Find+30]);
             centerline2_change();
         }
         if(rightline[Right_Up_Find]<MT9V03X_W/2)
