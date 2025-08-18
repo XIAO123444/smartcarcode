@@ -8,7 +8,6 @@
 #define PWM_R2               (TIM5_PWM_CH3_A2)
 
 
-bool dir = true;
 void motor_init()
 {
     pwm_init(PWM_L1, 17000, 0);                                                  // PWM 通道初始化频率 17KHz 占空比初始为 0

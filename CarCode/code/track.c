@@ -37,6 +37,7 @@ int16 lastleftupfind=0; // 上次左上点
 int16 lastleftdownfind=0; // 上次左下点
 extern int16 right_budandiao;       // 右不单调点
 
+int16 v_point;
 
 
 extern int16 right_down_guai[2];   // 右下拐点
@@ -178,6 +179,7 @@ void element_check(void) {
 
 
     centerline2_change();
+    v_point=find_vpoint(5,MT9V03X_W-5); // 查找v点
     continuity_pointLeft[0]=continuity_left(MT9V03X_H-1,search_stop+2); // 左连续性判断
     continuity_pointRight[0]=continuity_right(MT9V03X_H-1,search_stop+2); // 右连续性判断
     continuity_pointLeft[1]=leftline[continuity_pointLeft[0]]; // 左连续性点列
@@ -214,7 +216,7 @@ void element_check(void) {
             }
         }
         //圆环判断
-        if(right_budandiao&&Right_Down_Find>35&&rightlostpoint[0]>10&&rightlostpoint[0]<40&&search_stop<10&&leftlostpoint[0]<10)
+        if(right_budandiao&&Right_Down_Find>35&&rightlostpoint[0]>10&&rightlostpoint[0]<40&&search_stop<5&&leftlostpoint[0]<10&&Left_Up_Find==0)
         //右不单调点存在，右下拐点存在，右丢线点数量在10-40之间，左丢线点小于10，且搜索终止点小于10
         {
             carstatus_now=round_1; // 进入入环补直线状态
@@ -341,7 +343,7 @@ void element_check(void) {
         //使用更新的更精确的函数找上下拐点
 
         ips200_show_string(0,300,"round1");
-        if(Right_Down_Find==0&&Right_Up_Find<right_budandiao&&Right_Up_Find>20)//右下点没找到
+        if(Right_Down_Find==0&&Right_Up_Find>6)//右下点没找到
         {
             lastrightupfind=Right_Up_Find; //记录上 次右上点
             BUZZ_START();
@@ -356,7 +358,7 @@ void element_check(void) {
         }
         if(Right_Down_Find>35&&right_budandiao)
         {
-            trace_right_bu(1,MT9V03X_H-1); //右单调下补右线
+            trace_right_bu(1,MT9V03X_H-1 ); //右单调下补右线
             //注:这里为了考虑到让他走直线现这么搞着
             centerline2_change();
         } 
@@ -370,52 +372,39 @@ void element_check(void) {
         if(Right_Up_Find)//找到上点
         { 
             search_stop1=Right_Up_Find;
-            add_Lline_k(rightline[Right_Up_Find],Right_Up_Find,MT9V03X_H-20,leftline[MT9V03X_H-20]);
+            add_Lline_k(rightline[Right_Up_Find],Right_Up_Find,Right_Up_Find+20,leftline[Right_Up_Find+20]);
             centerline2_change();
         }
-//     search_stop1=Right_Up_Find;
-//      if(Right_Up_Find!=0&&right_budandiao)//如果找到了右上点,且右上点在右不单调点之上
-//     {
+        if(rightline[Right_Up_Find]<MT9V03X_W/2)
+        {
+            left_start_point=MT9V03X_W/2;
+            BUZZ_START();
+            carstatus_now=round_3;
+        }
+   }
+   if (carstatus_now == round_3)
+   {
+        Left_Down_Find=Find_Left_Down_Point(MT9V03X_H-1, search_stop-3); // 查找左下拐点,使用更新的函数,
+        Left_Up_Find=Find_Left_Up_Point(MT9V03X_H-2, search_stop-3); // 查找左上拐点,使用更新的函数,
+        if (Left_Up_Find)
+        {
+            add_Lline_k(leftline[Left_Up_Find],Left_Up_Find,MT9V03X_H-1,leftline[MT9V03X_H-1]);
+        } 
+        centerline2_change();
+ 
+        if(leftlostpoint[0]<=10)
+        {
+            left_start_point=0;
+            carstatus_now=round_4;
+            BUZZ_START();
+        }   
+        ips200_show_string(0,300,"round3");
+        
+    }
+    if(carstatus_now == round_4)
+    {
+        ips200_show_string(0,300,"round4");
 
-//         search_stop1=Right_Up_Find;
-//         draw_Lline_k(leftline[right_budandiao],right_budandiao,Right_Up_Find,-2);        //右单调上补左线
-
-         
-//         trace_right_bu(right_budandiao,MT9V03X_H-1);                                    //右单调下补右线
-//         centerline2_change();
-//     }
-//     else 
-//     {
-//         ips200_show_string(0,300,"ro2_bug");        //找点不到出bug
-//         search_stop1=Right_Up_Find;
-//         draw_Lline_k(leftline[MT9V03X_H-1],MT9V03X_H-1,Right_Up_Find,-2); //右单调上补左线
-
-//         centerline2_change();
-//     }
-//     if(search_stop1==0||leftlostpoint[0]>70 )//如果拐点太靠下或者拐点找不到了
-//     {
-//         left_start_point=100;  //左起点向右防止找y点误判
-//         carstatus_now = round_3;
-//     }
-
-// 2222
-//     if(rightline[Right_Up_Find]<MT9V03X_W/2)
-//     {
-//         left_start_point=MT9V03X_W/2;
-//         BUZZ_START();
-//         carstatus_now=round_3;
-//     }
-//    }
-//    if (carstatus_now==3)
-//    {
-//         ips200
-//    }
-   
-//    if (carstatus_now == round_3)
-//    {
-//         ips200_show_string(0,300,"round3");
-//         trace_left_bu(search_stop1,MT9V03X_H-1); //左单调下补左线
-//         centerline2_change();
     }
    
     ips200_show_int(200,260,search_stop1,3); // 显示搜索终止点1
@@ -426,6 +415,9 @@ void element_check(void) {
     ips200_show_int(200,220,continuity_pointRight[0],3); // 显示右不连续点
     ips200_show_string(0,220,"r_bdd");         //右不单调点
     ips200_show_int(50,220,right_budandiao,3); // 显示右不单调点
+    ips200_show_string(0,220,"r_bdd");         //右不单调点
+    // ips200_show_string(80,240,"v_point");         //截止行
+    // ips200_show_int(120,240,v_point,3); // 显示v点
     ips200_show_string(0,280,"s_stop");         //截止行
     ips200_show_string(80,280,"l_up");          //左上拐点
     ips200_show_int(120,280,Left_Up_Find,3);    
