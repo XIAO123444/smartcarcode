@@ -584,17 +584,17 @@ void image_boundary_process2(void)
     // {
     //     printf("%d,",leftline[i]);
     // }   
-    // for(row = MT9V03X_H - 1; row > search_stop; row--)
-    // {
-    //     if(right_lost_flag[row]==1&&left_lost_flag[row]==1) //Í¬Ê±¶ªÏß
-    //     {
-    //         bothlostpoint[0]++;
-    //         bothlostpoint[1]=row;
-    //         both_lost_flag[row]=1;
-    //     }
-    //     if(boundry_start_left==0&&leftline[row]!=0) {boundry_start_left=row;}   //×ó±ß½çÆðÊ¼µã
-    //     if(boundry_start_right==0&&rightline[row]!=MT9V03X_W-1) {boundry_start_right=row;} //ÓÒ±ß½çÆðÊ¼µã
-    // }
+    for(row = MT9V03X_H - 1; row > search_stop; row--)
+    {
+        if(right_lost_flag[row]==1&&left_lost_flag[row]==1) //Í¬Ê±¶ªÏß
+        {
+            bothlostpoint[0]++;
+            bothlostpoint[1]=row;
+            both_lost_flag[row]=1;
+        }
+        if(boundry_start_left==0&&leftline[row]!=0) {boundry_start_left=row;}   //×ó±ß½çÆðÊ¼µã
+        if(boundry_start_right==0&&rightline[row]!=MT9V03X_W-1) {boundry_start_right=row;} //ÓÒ±ß½çÆðÊ¼µã
+    }
 }
 
 
@@ -870,10 +870,10 @@ int16 Find_Left_Down_Point(int16 start,int16 end)//ÕÒ×óÏÂ½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµ
     {
         end=4;//¼°Ê±×î³¤°×ÁÐ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êý×éÔ½½ç    
     }
-    // if(leftline[start]<=0&&leftline[start-1]<=0&&leftline[start-2]<=0&&leftline[start-3]<=0)//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
-    // {
-    //     return 0;
-    // }
+    if(leftline[start]<=0&&leftline[start-1]<=0&&leftline[start-2]<=0&&leftline[start-3]<=0)//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
+    {
+        return 0;
+    }
     for(int i=start;i>=end;i--)//ÓÉÏÂÖÁÉÏÕÒ½Çµã 
     {
         if(((leftline[i]-leftline[i-2])>=8||leftline[i-2]==0)&&
@@ -911,10 +911,10 @@ int16 Find_Right_Down_Point(int16 start,int16 end)
     {
         end=4;//¼°Ê±×î³¤°×ÁÐ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êý×éÔ½½ç    
     }
-    // if(rightline[start]>=MT9V03X_W-1&&rightline[start-1]>=MT9V03X_W-1&&rightline[start-2]>=MT9V03X_W-1&&rightline[start-3]>=MT9V03X_W-1)//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
-    // {
-    //     return 0;
-    // }
+    if(rightline[start]>=MT9V03X_W-1&&rightline[start-1]>=MT9V03X_W-1&&rightline[start-2]>=MT9V03X_W-1&&rightline[start-3]>=MT9V03X_W-1)//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
+    {
+        return 0;
+    }
     for(int i=start;i>=end;i--)
     {
         if(((rightline[i]-rightline[i-2])<=-8||rightline[i-2]==MT9V03X_W-1)&&
@@ -942,13 +942,13 @@ int16 Find_Right_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄ
     {start=1;}
     if(end>=MT9V03X_H-1-4)
     {end=MT9V03X_H-1-4;}
-    // if(rightline[start]==MT9V03X_W-1&&rightline[start+1]==MT9V03X_W-1&&rightline[start+2]==MT9V03X_W-1)
-    // {
-    //     return 0;//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
-    // }
+    if(rightline[start]==MT9V03X_W-1&&rightline[start+1]==MT9V03X_W-1&&rightline[start+2]==MT9V03X_W-1)
+    {
+        return 0;//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
+    }
     for(i=start;i<=end;i++)
     {
-        if((abs(rightline[i]-rightline[i-1])<=3)&&
+        if(
            ((rightline[i]-rightline[i+2])<=-8||rightline[i+2]==MT9V03X_W-1)&&
            ((rightline[i]-rightline[i+3])<=-15||rightline[i+3]==MT9V03X_W-1)&&
            ((rightline[i]-rightline[i+4])<=-15||rightline[i+4]==MT9V03X_W-1))
@@ -963,7 +963,7 @@ int16 Find_Right_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄ
 int16 Find_Left_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄÐÐÊý
 {
     int16 i,t;
-    int16 right_up_line=0;
+    int16 left_up_line=0;
     if(start>end)
     {
         t=start; 
@@ -974,21 +974,21 @@ int16 Find_Left_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄÐ
     {start=1;}
     if(end>=MT9V03X_H-1-4)
     {end=MT9V03X_H-1-4;}
-    // if(leftline[start]==0&&leftline[start+1]==0&&leftline[start+2]==0)
-    // {
-    //     return 0;//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
-    // }
+    if(leftline[start]==0&&leftline[start+1]==0&&leftline[start+2]==0)
+    {
+        return 0;//Èç¹ûÆðÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓÐ¹ÕµãÅÐ¶ÏµÄÒâÒå
+    }
     for(i=start;i<=end;i++)//ÓÉÉÏÖÁÏÂÕÒ½Çµã
     {
         if(((leftline[i]-leftline[i+2])>=8||leftline[i+2]==0)&&
            ((leftline[i]-leftline[i+3])>=15||leftline[i+3]==0)&&
            ((leftline[i]-leftline[i+4])>=15||leftline[i+4]==0))
         {
-            right_up_line=i;//»ñÈ¡ÐÐÊý¼´¿É
+            left_up_line=i;//»ñÈ¡ÐÐÊý¼´¿É
             break;
         }
     }
-    return right_up_line;
+    return left_up_line;
 }
 
 int16 find_vpoint(int16 start,int16 end)
@@ -1409,27 +1409,12 @@ void lenthen_Right_bondarise_bottom(int16 start)
 }
 
 uint8 traceL[MT9V03X_H]=        //×ó±ß½ç¹ì¼£
-{0,66,65,65,64,63,63,62,62,61,60,59,58,58,57,56,55,
-55,54,54,53,51,51,50,49,48,47,47,46,45,45,44,43,43,
-42,41,41,40,39,39,38,37,37,36,35,34,34,33,32,31,31,
-30,29,29,28,28,27,26,25,25,24,23,23,22,21,21,20,19,
-19,18,17,17,16,15,15,14,13,13,12,11,10,10,9,8,8,7,6,6,5,4};
+{0,74,73,74,73,72,72,71,70,70,69,69,68,67,67,66,65,65,64,64,63,62,62,62,61,60,59,58,58,57,56,56,55,55,54,53,53,52,51,51,50,50,49,48,48,47,47,46,46,45,44,43,43,42,41,40,40,39,39,38,37,37,36,35,35,34,33,33,32,31,31,30,29,29,28,28,27,26,26,25,24,24,23,22,22,21,21,20,19,19};
 uint8 traceR[MT9V03X_H]=        //ÓÒ±ß½ç¹ì¼£
-{159,98,99,100,100,101,102,102,103,104,104,105,106,
-106,107,108,108,109,110,110,111,111,112,113,114,114,
-115,116,116,117,118,118,119,120,120,121,122,122,123,
-124,125,125,126,127,127,128,129,129,130,131,132,132,
-133,134,134,135,136,136,137,137,138,139,139,140,140,
-141,142,142,143,144,144,145,145,146,147,147,148,149,
-149,150,150,151,152,152,153,154,154,155,156,156};
+{179,106,106,108,108,109,109,110,111,112,113,113,114,115,115,116,117,117,118,119,119,120,121,121,122,123,124,124,125,126,126,127,128,128,129,130,131,131,132,133,134,134,135,136,137,137,138,139,139,140,141,141,142,143,144,144,145,146,147,147,148,149,149,150,151,152,152,153,154,155,155,156,157,157,158,159,159,160,161,162,162,163,164,165,165,166,167,167,168,169};
 
 uint8 trace_middle[MT9V03X_H]=         //ÈüµÀ¿í¶È
-{159, 32, 34, 35, 36, 38, 39, 40, 41, 43, 44, 46, 48, 48, 50, 52, 53, 
-54, 56, 56, 58, 60, 61, 63, 65, 66, 68, 69, 70, 72, 73, 74, 76, 77, 
-78, 80, 81, 82, 84, 85, 87, 88, 89, 91, 92, 94, 95, 96, 98, 100, 101, 
-102, 104, 105, 106, 108, 110, 111, 112, 114, 116, 116, 118, 119, 120, 
-121, 124, 125, 126, 128, 129, 130, 131, 132, 134, 135, 136, 138, 139, 
-140, 141, 142, 144, 145, 146, 148, 150, 151, 152};
+{179, 32, 33, 34, 35, 37, 37, 39, 41, 42, 44, 44, 46, 48, 48, 50, 52, 52, 54, 55, 56, 58, 59, 59, 61, 63, 65, 66, 67, 69, 70, 71, 73, 73, 75, 77, 78, 79, 82, 83, 84, 84, 86, 88, 89, 90, 92, 93, 93, 95, 97, 98, 99, 102, 103, 104, 105, 107, 108, 109, 111, 112, 113, 115, 116, 118, 119, 120, 122, 124, 125, 126, 128, 128, 130, 131, 132, 134, 135, 137, 138, 139, 141, 143, 143, 145, 146, 147, 149, 150};
 /*------------------------------------------------------------------------------------------------------------------
 º¯Êý¼ò½é     ÓÒ±ß½ç¹ì¼£ 
 ²ÎÊýËµÃ÷     ÎÞ

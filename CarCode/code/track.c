@@ -216,7 +216,7 @@ void element_check(void) {
             }
         }
         //圆环判断
-        if(right_budandiao&&Right_Down_Find>35&&rightlostpoint[0]>10&&rightlostpoint[0]<40&&search_stop<5&&leftlostpoint[0]<10&&Left_Up_Find==0)
+        if(right_budandiao&&Right_Down_Find>35&&rightlostpoint[0]>10&&rightlostpoint[0]<80&&search_stop<5&&leftlostpoint[0]<10&&Left_Up_Find==0)
         //右不单调点存在，右下拐点存在，右丢线点数量在10-40之间，左丢线点小于10，且搜索终止点小于10
         {
             carstatus_now=round_1; // 进入入环补直线状态
@@ -343,7 +343,7 @@ void element_check(void) {
         //使用更新的更精确的函数找上下拐点
 
         ips200_show_string(0,300,"round1");
-        if(Right_Down_Find==0&&Right_Up_Find>6)//右下点没找到
+        if(Right_Up_Find>15&&Right_Up_Find<35&&Right_Down_Find==0)//右下点没找到
         {
             lastrightupfind=Right_Up_Find; //记录上 次右上点
             BUZZ_START();
@@ -385,7 +385,7 @@ void element_check(void) {
    if (carstatus_now == round_3)
    {
         Left_Down_Find=Find_Left_Down_Point(MT9V03X_H-1, search_stop-3); // 查找左下拐点,使用更新的函数,
-        Left_Up_Find=Find_Left_Up_Point(MT9V03X_H-2, search_stop-3); // 查找左上拐点,使用更新的函数,
+        Left_Up_Find=Find_Left_Up_Point(MT9V03X_H-2, search_stop); // 查找左上拐点,使用更新的函数,
         if (Left_Up_Find)
         {
             add_Lline_k(leftline[Left_Up_Find],Left_Up_Find,MT9V03X_H-1,leftline[MT9V03X_H-1]);
