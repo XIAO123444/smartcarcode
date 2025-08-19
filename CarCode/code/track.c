@@ -36,7 +36,7 @@ int16 lastrightdownfind=0; // 上次右下点
 int16 lastleftupfind=0; // 上次左上点
 int16 lastleftdownfind=0; // 上次左下点
 extern int16 right_budandiao;       // 右不单调点
-
+extern int16 left_budandiao;        // 左不单调点
 int16 v_point;
 
 
@@ -188,7 +188,7 @@ void element_check(void) {
     Find_Down_Point(MT9V03X_H-1, search_stop); //查找下半段边界点
     if(Left_Down_Find <= Left_Up_Find) {Left_Down_Find = 0;}
     if(Right_Down_Find <= Right_Up_Find){ Right_Down_Find = 0;}
-
+    left_budandiao=montonicity_left(MT9V03X_H-1,search_stop+5); // 左不单调点
     right_budandiao=montonicity_right(MT9V03X_H-1,search_stop+5); // 右不单调点
 
 ////    /*---------- 直道状态检测 ----------*/
@@ -343,7 +343,7 @@ void element_check(void) {
         //使用更新的更精确的函数找上下拐点
 
         ips200_show_string(0,300,"round1");
-        if(Right_Up_Find>15&&Right_Up_Find<35&&Right_Down_Find==0)//右下点没找到
+        if(Right_Up_Find>10&&Right_Up_Find<35&&Right_Down_Find==0)//右下点没找到
         {
             lastrightupfind=Right_Up_Find; //记录上 次右上点
             BUZZ_START();
@@ -357,7 +357,7 @@ void element_check(void) {
 
         }
         if(Right_Down_Find>35&&right_budandiao)
-        {
+        { 
             trace_right_bu(1,MT9V03X_H-1 ); //右单调下补右线
             //注:这里为了考虑到让他走直线现这么搞着
             centerline2_change();
@@ -372,7 +372,7 @@ void element_check(void) {
         if(Right_Up_Find)//找到上点
         { 
             search_stop1=Right_Up_Find;
-            add_Lline_k(rightline[Right_Up_Find],Right_Up_Find,Right_Up_Find+30,leftline[Right_Up_Find+30]);
+            add_Lline_k(rightline[Right_Up_Find]+10,Right_Up_Find,Right_Up_Find+30,leftline[Right_Up_Find+30]+10); //右上点补直线
             centerline2_change();
         }
         if(rightline[Right_Up_Find]<MT9V03X_W/2)
@@ -382,7 +382,7 @@ void element_check(void) {
             carstatus_now=round_3;
         }
    }
-   if (carstatus_now == round_3)
+   if (carstatus_now == round_3) 
    {
         Left_Down_Find=Find_Left_Down_Point(MT9V03X_H-1, search_stop-3); // 查找左下拐点,使用更新的函数,
         Left_Up_Find=Find_Left_Up_Point(MT9V03X_H-2, search_stop); // 查找左上拐点,使用更新的函数,
@@ -404,8 +404,27 @@ void element_check(void) {
     if(carstatus_now == round_4)
     {
         ips200_show_string(0,300,"round4");
+        left_budandiao=montonicity_left(MT9V03X_H-1,search_stop+6); // 左不单调点最少加6
+        if(left_budandiao)
+        {
+             BUZZ_START();
+            carstatus_now=round_5; // 进入左拐点补斜线状态
+            return;
+
+        }
 
     }
+    if (carstatus_now==round_5) 
+    {
+        ips200_show_string(0,300,"round5");
+        Right_Up_Find=Find_Right_Up_Point(MT9V03X_H-1, search_stop); // 查找右上拐点,使用更新的函数
+        lenthen_Left_bondarise_bottom(left_budandiao); // 延长左边界到底部
+        // draw_Lline_k(leftline[left_budandiao],left_budandiao,search_stop,-3); // 左不单调点补直线
+        draw_Rline_k(MT9V03X_W-1,search_stop,rightlostpoint[1],0); // 右不单调点补直线
+
+    }
+
+    
    
     ips200_show_int(200,260,search_stop1,3); // 显示搜索终止点1
     ips200_show_int(50,280,search_stop,3);      // 显示截止行
@@ -416,8 +435,8 @@ void element_check(void) {
     ips200_show_string(0,220,"r_bdd");         //右不单调点
     ips200_show_int(50,220,right_budandiao,3); // 显示右不单调点
     ips200_show_string(0,220,"r_bdd");         //右不单调点
-    // ips200_show_string(80,240,"v_point");         //截止行
-    // ips200_show_int(120,240,v_point,3); // 显示v点
+    ips200_show_string(80,240,"l_bdd");         //截止行
+    ips200_show_int(120,240,left_budandiao,3); // 显示v点
     ips200_show_string(0,280,"s_stop");         //截止行
     ips200_show_string(80,280,"l_up");          //左上拐点
     ips200_show_int(120,280,Left_Up_Find,3);    

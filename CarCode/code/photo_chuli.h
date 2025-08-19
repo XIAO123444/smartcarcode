@@ -36,6 +36,10 @@ void add_Lline_k(int16 startx, int16 starty, int16 endy,int16 endx);
 void lenthen_Left_bondarise(int16 start);
 void lenthen_Right_bondarise(int16 start);
 
+void lenthen_Right_bondarise_bottom(int16 start);
+void lenthen_Left_bondarise_bottom(int16 start);
+
+
 void banmaxian_check(void);
 void black_protect_check(void);
 

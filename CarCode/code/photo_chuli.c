@@ -903,13 +903,13 @@ int16 Find_Right_Down_Point(int16 start,int16 end)
         start=end;
         end=t;
     }
-    if(start>MT9V03X_H-2)
+    if(start>MT9V03X_H-3)
     {
-        start=MT9V03X_H-2;//ÏÂÃæ5ĞĞÉÏÃæ5ĞĞÊı¾İ²»ÎÈ¶¨£¬²»ÄÜ×÷Îª±ß½çµãÀ´ÅĞ¶Ï£¬ÉáÆú
+        start=MT9V03X_H-3;//ÏÂÃæ5ĞĞÉÏÃæ5ĞĞÊı¾İ²»ÎÈ¶¨£¬²»ÄÜ×÷Îª±ß½çµãÀ´ÅĞ¶Ï£¬ÉáÆú
     }
-    if(end<4)
+    if(end<5)
     {
-        end=4;//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç    
+        end=5;//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç    
     }
     if(rightline[start]>=MT9V03X_W-1&&rightline[start-1]>=MT9V03X_W-1&&rightline[start-2]>=MT9V03X_W-1&&rightline[start-3]>=MT9V03X_W-1)//Èç¹ûÆğÊ¼µã¾Í¶¼¶ªÏß£¬Ã»ÓĞ¹ÕµãÅĞ¶ÏµÄÒâÒå
     {
@@ -917,7 +917,9 @@ int16 Find_Right_Down_Point(int16 start,int16 end)
     }
     for(int i=start;i>=end;i--)
     {
-        if(((rightline[i]-rightline[i-2])<=-8||rightline[i-2]==MT9V03X_W-1)&&
+        if(rightline[i]<=rightline[i+1]&&
+            rightline[i+1]<=rightline[i+2]&&
+            ((rightline[i]-rightline[i-2])<=-8)&&
            ((rightline[i]-rightline[i-3])<=-15||rightline[i-3]==MT9V03X_W-1)&&
            ((rightline[i]-rightline[i-4])<=-15||rightline[i-4]==MT9V03X_W-1))
         {
@@ -938,8 +940,8 @@ int16 Find_Right_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄ
         start=end;
         end=t;
     }    
-    if(start<=2)//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç
-    {start=1;}
+    if(start<=3)//¼°Ê±×î³¤°×ÁĞ·Ç³£³¤£¬Ò²ÒªÉáÆú²¿·Öµã£¬·ÀÖ¹Êı×éÔ½½ç
+    {start=3;}
     if(end>=MT9V03X_H-1-4)
     {end=MT9V03X_H-1-4;}
     if(rightline[start]==MT9V03X_W-1&&rightline[start+1]==MT9V03X_W-1&&rightline[start+2]==MT9V03X_W-1)
@@ -948,8 +950,13 @@ int16 Find_Right_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄ
     }
     for(i=start;i<=end;i++)
     {
-        if(
-           ((rightline[i]-rightline[i+2])<=-8||rightline[i+2]==MT9V03X_W-1)&&
+        if(rightline[i]==MT9V03X_W-1)//Èç¹ûÓÒ±ß½çµãÊÇMT9V03X_W-1£¬ËµÃ÷Ã»ÓĞÕÒµ½
+        {
+            break;  //Ö±½Ó×÷·Ï
+        }
+        if(rightline[i]>=rightline[i-1]&&
+            rightline[i-1]>=rightline[i-2]&&
+           ((rightline[i]-rightline[i+2])<=-8)&&
            ((rightline[i]-rightline[i+3])<=-15||rightline[i+3]==MT9V03X_W-1)&&
            ((rightline[i]-rightline[i+4])<=-15||rightline[i+4]==MT9V03X_W-1))
         {
@@ -980,7 +987,7 @@ int16 Find_Left_Up_Point(int16 start,int16 end)//ÕÒËÄ¸ö½Çµã£¬·µ»ØÖµÊÇ½ÇµãËùÔÚµÄĞ
     }
     for(i=start;i<=end;i++)//ÓÉÉÏÖÁÏÂÕÒ½Çµã
     {
-        if(((leftline[i]-leftline[i+2])>=8||leftline[i+2]==0)&&
+        if(((leftline[i]-leftline[i+2])>=8)&&
            ((leftline[i]-leftline[i+3])>=15||leftline[i+3]==0)&&
            ((leftline[i]-leftline[i+4])>=15||leftline[i+4]==0))
         {
@@ -1140,35 +1147,37 @@ int16 montonicity_right (uint8 start,uint8 end)
     return 0;
 
 }
-int16 montonicity_left(uint8 start,uint8 end)
+int16 montonicity_left(uint8 start, uint8 end) 
 {
     int16 i;
-    int16 result=0;
+    int16 result = 0;
 
-            if(start<end)
-    {
-        uint8 t=start;
-        start=end;
-        end=t;
+    // È·±£start >= end£¨·´Ïò±éÀú£©
+    if (start < end) {
+        uint8 t = start;
+        start = end;
+        end = t;
     }
-    if(start>=MT9V03X_H-6)//Êı×éÔ½½ç±£»¤
-        start=MT9V03X_H-6;
-    if(end<=5)
-    {
-        end=5;
-    }
-    for(i=start;i>=end;i--)
-    {
 
-        if(leftline[i] >leftline[i+5]&&leftline[i] >leftline[i-5])
-        {
-            result=i;
+    // Êı×éÔ½½ç±£»¤£¨ÓëÓÒµ¥µ÷ĞÔ¶Ô³Æ£©
+    if (start >= MT9V03X_H - 6) {
+        start = MT9V03X_H - 6;
+    }
+    if (end <= 6) {  // ×óµ¥µ÷ĞÔĞè±£Áô5µÄÆ«ÒÆÁ¿
+        end = 6;
+    }
+
+    // ·´Ïò±éÀú£¨´Ó¸ßµ½µÍ£©
+    for (i = end; i <= start; i++) {
+
+        if (leftline[i] > leftline[i + 5] && leftline[i] > leftline[i - 5]) {
+            result = i;
             return result;
-
         }
     }
     return 0;
 }
+
 
 
 
@@ -1358,7 +1367,7 @@ void lenthen_Left_bondarise_bottom(int16 start)
 {
     if(start<0){start=0;}
     if(start>MT9V03X_H-8){start=MT9V03X_H-8;}
-    float dx=(float)(leftline[start]-leftline[start+5])/5;
+    float dx=-(float)(leftline[start]-leftline[start+5])/5;
     for(int16 i=start;i>=0;i--)
     {
         if((float)leftline[start]+(float)(dx*(i-start))<0)

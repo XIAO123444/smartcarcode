@@ -31,7 +31,8 @@ void motor_run(int16 a,int16 b)
             pwm_set_duty(PWM_L1,0);
             pwm_set_duty(PWM_L2, (uint16)(-a * (PWM_DUTY_MAX / 10000)));                   // 计算占空比
                 // 计算占空比
-        }
+        } 
+ 
      if(0 <= b)                                                           // 正转
         {
             pwm_set_duty(PWM_R2,0);
