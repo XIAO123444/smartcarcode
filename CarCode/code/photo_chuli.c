@@ -570,7 +570,7 @@ void image_boundary_process2(void)
         
         
     }
-    //测赛宽
+      //测赛宽
     // printf("\n");
     // printf("rightline");
 
@@ -583,7 +583,7 @@ void image_boundary_process2(void)
     // for(int16 i=0;i<MT9V03X_H;i++)
     // {
     //     printf("%d,",leftline[i]);
-    // }   
+    // }      
     for(row = MT9V03X_H - 1; row > search_stop; row--)
     {
         if(right_lost_flag[row]==1&&left_lost_flag[row]==1) //同时丢线

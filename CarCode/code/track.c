@@ -129,9 +129,25 @@ int16 output_middle4(void)
     result=(centerline2[search_stop1]+centerline2[search_stop1+1]+centerline2[search_stop1+2])/3;          // 取终止点的平均值                  
     return result; // 返回终止点的平均值
 } 
+
+enum mark {
+    straight,    // 直道行驶
+    crossroad,   // 十字路口
+    crossroadL, // 左斜入十字
+    crossroadR, // 右斜入十字
+    round_1,
+    round_2,   // 入环补直线a
+    round_3,   // 圆环补斜线（未使用）
+    round_4,   // 入环行驶
+    round_5,   // 左拐点补斜线
+    round_6,    // 出环补直线
+    round_7    // 出环补斜线
+};
+enum mark carstatus_now = straight;  // 当前车辆状态
+
 bool output_addspeedflag(void)
 {
-    if (search_stop1<forwardsight2&&abs(centerline2[forwardsight2]-MT9V03X_W/2)<10) // 前视距离小于终止点且中心线接近中线
+    if (search_stop1<forwardsight2&&abs(centerline2[forwardsight2]-MT9V03X_W/2)<10&&carstatus_now!=round_1&&carstatus_now!=round_2&&carstatus_now!=round_3&&carstatus_now!=round_4&&carstatus_now!=round_5&&carstatus_now!=round_6&&carstatus_now!=round_7) // 前视距离小于终止点且中心线接近中线
      // 说明前方道路平坦，可以加速
      // 注意：这里的15是一个经验值，可以根据实际情况调整
     { 
@@ -146,19 +162,6 @@ bool output_addspeedflag(void)
 
 int32 encodercounter=0;
 
-
-enum mark {
-    straight,    // 直道行驶
-    crossroad,   // 十字路口
-    crossroadL, // 左斜入十字
-    crossroadR, // 右斜入十字
-    round_1,
-    round_2,   // 入环补直线a
-    round_3,   // 圆环补斜线（未使用）
-    round_4,   // 入环行驶
-    round_5,   // 左拐点补斜线
-};
-enum mark carstatus_now = straight;  // 当前车辆状态
 
 
 void centerline2_change(void) {
@@ -188,8 +191,8 @@ void element_check(void) {
     Find_Down_Point(MT9V03X_H-1, search_stop); //查找下半段边界点
     if(Left_Down_Find <= Left_Up_Find) {Left_Down_Find = 0;}
     if(Right_Down_Find <= Right_Up_Find){ Right_Down_Find = 0;}
-    left_budandiao=montonicity_left(MT9V03X_H-1,search_stop+5); // 左不单调点
-    right_budandiao=montonicity_right(MT9V03X_H-1,search_stop+5); // 右不单调点
+    left_budandiao=montonicity_left(MT9V03X_H-1,search_stop+6); // 左不单调点
+    right_budandiao=montonicity_right(MT9V03X_H-1,search_stop+6); // 右不单调点
 
 ////    /*---------- 直道状态检测 ----------*/
     if(carstatus_now == straight) 
@@ -356,7 +359,7 @@ void element_check(void) {
             centerline2_change();
 
         }
-        if(Right_Down_Find>35&&right_budandiao)
+          if(Right_Down_Find>35&&right_budandiao)
         { 
             trace_right_bu(1,MT9V03X_H-1 ); //右单调下补右线
             //注:这里为了考虑到让他走直线现这么搞着
@@ -370,7 +373,7 @@ void element_check(void) {
         Right_Up_Find   =Find_Right_Up_Point(MT9V03X_H-1, search_stop); // 查找右上拐点,使用更新的函数,
         Right_Down_Find =Find_Right_Down_Point(MT9V03X_H-2, search_stop); // 查找右下拐点,使用更新的函数
         if(Right_Up_Find)//找到上点
-        { 
+        {  
             search_stop1=Right_Up_Find;
             add_Lline_k(rightline[Right_Up_Find]+10,Right_Up_Find,Right_Up_Find+30,leftline[Right_Up_Find+30]+10); //右上点补直线
             centerline2_change();
@@ -417,11 +420,43 @@ void element_check(void) {
     if (carstatus_now==round_5) 
     {
         ips200_show_string(0,300,"round5");
-        Right_Up_Find=Find_Right_Up_Point(MT9V03X_H-1, search_stop); // 查找右上拐点,使用更新的函数
-        lenthen_Left_bondarise_bottom(left_budandiao); // 延长左边界到底部
-        // draw_Lline_k(leftline[left_budandiao],left_budandiao,search_stop,-3); // 左不单调点补直线
+        left_budandiao=montonicity_left(MT9V03X_H-1,search_stop+6); // 左不单调点最少加6
+        // Right_Up_Find=Find_Right_Up_Point(MT9V03X_H-1, search_stop); // 查找右上拐点,使用更新的函数
+        // lenthen_Left_bondarise_bottom(left_budandiao); // 延长左边界到底部
+        draw_Lline_k(leftline[left_budandiao],left_budandiao,search_stop,-1); // 左不单调点补直线
         draw_Rline_k(MT9V03X_W-1,search_stop,rightlostpoint[1],0); // 右不单调点补直线
+        if(left_budandiao==0) // 如果左不单调点为0
+        {
+            carstatus_now=round_6; // 进入出环补直线状态
+            BUZZ_START();
+        }
+        centerline2_change();
+    }
+    if(carstatus_now==round_6)
+    {
+        ips200_show_string(0,300,"round6");
 
+        Find_Right_Up_Point(MT9V03X_H-1, search_stop); // 查找右上拐点,使用更新的函数,
+        draw_Lline_k(0,MT9V03X_H-1,search_stop,-2);// 左边界补直线
+
+        centerline2_change(); 
+
+        if(Right_Up_Find||search_stop<20)
+        {
+            BUZZ_START();
+            carstatus_now=round_7; // 进入直道状态
+        }
+
+    }
+    if(carstatus_now==round_7)
+    {
+        ips200_show_string(0,300,"round7");
+        centerline2_change();
+        if(right_start_point>60)
+        {
+            carstatus_now=straight;
+            BUZZ_START();
+        }
     }
 
     

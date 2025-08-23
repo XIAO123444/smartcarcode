@@ -129,7 +129,7 @@ int main(void)
             flash_save();           // flash´æ´¢
         }
 
-        BUZZ_cycle();           // ·  äÃùÆ÷Ñ­»·
+        BUZZ_cycle();           // ·    äÃùÆ÷Ñ­»·
         if(mt9v03x_finish_flag)
         { 
             image_threshold = my_adapt_threshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H); // Í¼Ïñ»ñÈ¡
