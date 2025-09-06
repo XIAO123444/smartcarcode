@@ -12,7 +12,6 @@
 #include "steer_pid.h"
 #include "buzzer.h"
 #include "speed.h"
-
 bool save_flag = false;
 bool stop_flag1;                    // 停止标志
 bool start_flag = false;            // 启动标志

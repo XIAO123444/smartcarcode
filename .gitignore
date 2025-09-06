@@ -36,3 +36,4 @@ CarCode/mdk/.clangd
 *.log
 *.scvd
 CarCode/mdk/.vscode/uv4.log.lock
+CarCode/mdk/tmp
