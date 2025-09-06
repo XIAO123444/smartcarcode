@@ -773,6 +773,8 @@ void Find_Up_Point(int16 start,int16 end)
            abs(leftline[i]-leftline[i-1])<=3&&
            abs(leftline[i-1]-leftline[i-2])<=3&&
            abs(leftline[i-2]-leftline[i-3])<=3&&
+           leftline[i-2]-leftline[i]>-2&&
+            leftline[i-3]-leftline[i]>-3&&
               ((leftline[i]-leftline[i+2])>=3)&&
               ((leftline[i]-leftline[i+3])>=5)&&
               ((leftline[i]-leftline[i+4])>=10))
@@ -788,6 +790,8 @@ void Find_Up_Point(int16 start,int16 end)
            abs(rightline[i]-rightline[i-1])<=3&&//下面两行位置差不多
            abs(rightline[i-1]-rightline[i-2])<=3&&
            abs(rightline[i-2]-rightline[i-3])<=3&&
+           rightline[i-2]-rightline[i]<2&&
+           rightline[i-3]-rightline[i]<3&&
               ((rightline[i]-rightline[i+2]<=-3))&&
               ((rightline[i]-rightline[i+3])<=-5)&&
               ((rightline[i]-rightline[i+4])<=-10))

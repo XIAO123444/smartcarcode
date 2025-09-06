@@ -187,8 +187,8 @@ MENU menu[]={
 
 enum condition{
     NOACTION,
-    L,
     R,
+    L,
     UP,
     DOWN,
     CONFIRM,

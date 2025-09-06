@@ -202,9 +202,9 @@ void TIM5_IRQHandler (void)
 void TIM6_IRQHandler (void) 
 {
     // æ­¤å?„ç¼–å†™ç”¨æˆ·ä»£ç ?
-	encoder1=encoder_get_count(TIM3_ENCODER)*(-1);
+	encoder1=encoder_get_count(TIM3_ENCODER);
 	encoder_clear_count(TIM3_ENCODER);
-	encoder2=encoder_get_count(TIM4_ENCODER);
+	encoder2=(-1)*encoder_get_count(TIM4_ENCODER);
 	encoder_clear_count(TIM4_ENCODER);
 	encodercounter1+=(encoder2+encoder1);
     turn1=40 *S_PID_CAL();
@@ -218,7 +218,7 @@ void TIM6_IRQHandler (void)
     if(car_situation==0)
     {
         //Ö±µÀ
-        dutyl = outpute-turn1;
+        dutyl = outpute-turn1; 
         dutyr =outpute+turn1;
     }
     if(car_situation==1)

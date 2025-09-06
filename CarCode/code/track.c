@@ -206,7 +206,7 @@ void element_check(void) {
                 carstatus_now = crossroad; // 进入十字路口状态
                 return;
             }
-            if(continuity_pointLeft[0] != 0&& Left_Up_Find != 0&&Left_Up_Find>search_stop-2&&rightlostpoint[0]>50)//左不连续点找到 且右不连续点未找到，且左上拐点找到，此时为左斜入十字后续加入左丢线点
+            if(continuity_pointLeft[0] != 0&& Left_Up_Find != 0&&Left_Up_Find>search_stop-2&&rightlostpoint[0]>50&&abs(left_budandiao-Left_Up_Find)>5)//左不连续点找到 且右不连续点未找到，且左上拐点找到，此时为左斜入十字后续加入左丢线点
             {
                 carstatus_now = crossroadL; // 进入十字路口状态
                 return; 
