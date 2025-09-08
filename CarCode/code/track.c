@@ -219,7 +219,7 @@ void element_check(void) {
             }
         }
         //圆环判断
-        if(right_budandiao&&Right_Down_Find>35&&rightlostpoint[0]>10&&rightlostpoint[0]<80&&search_stop<5&&leftlostpoint[0]<10&&Left_Up_Find==0)
+        if(right_budandiao&&Right_Down_Find>35&&rightlostpoint[0]>10&&rightlostpoint[0]<80&&search_stop<3&&leftlostpoint[0]<10&&Left_Up_Find==0)
         //右不单调点存在，右下拐点存在，右丢线点数量在10-40之间，左丢线点小于10，且搜索终止点小于10
         {
             carstatus_now=round_1; // 进入入环补直线状态

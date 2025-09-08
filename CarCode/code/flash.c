@@ -12,6 +12,7 @@ extern int forwardsight2;       //前瞻2，提前看弯道
 extern int forwardsight3;       //前瞻3，弯道前瞻
 extern int16 threshold_up;       //大津法阈值上限
 extern int16 threshold_down;     //大津法阈值下限
+extern float beilv;             //速度倍率
 void flash_init(void)
 {
     flash_buffer_clear();
@@ -44,5 +45,8 @@ void flash_init(void)
     S_PID1.d                =flash_union_buffer[2].float_type;
     S_PID1.outputmax        =flash_union_buffer[3].float_type;
     S_PID1.outputmin        =flash_union_buffer[4].float_type;
+    flash_buffer_clear();
+    flash_read_page_to_buffer(99, 1);                            // 将数据从 flash 读取到缓冲区
+    beilv                  =flash_union_buffer[0].float_type;
     
 }

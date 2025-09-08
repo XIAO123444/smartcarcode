@@ -26,6 +26,8 @@ int32 speed;
 int32 forwardsight;
 int32 forwardsight2;//直到判断前瞻
 int32 forwardsight3;//弯道前瞻
+
+float beilv;//倍率
 typedef struct 
 {
     unsigned char priority;             //页面优先级
@@ -145,14 +147,30 @@ void car_init(void)
     forwardsight=26;
     forwardsight2=2;
     forwardsight3=26;
+    beilv=1.0;
 }
 
+void add_beilv()
+{
+    beilv+=0.1;
+}
+void sub_beilv()
+{
+    if(beilv-0.1<0)
+    {
+        beilv=0;
+    }
+    else
+    {
+        beilv-=0.1;
+    }
+}
 MENU menu[]={
     {1,"pid_param",0,20,0,0,0,nfunc,nfunc,nfunc},
-        {2,"p",      ips200_x_max-10 * 7, 20,  0,0,1,  pid_sub_p,           pid_add_p,          nfunc},  
-        {2,"i",      ips200_x_max-10 * 7, 40,  0,0,1,  pid_sub_i,           pid_add_i,          nfunc},  
-        {2,"d",      ips200_x_max-10 * 7, 60,  0,0,1,  pid_sub_d,           pid_add_d,          nfunc},  
-        {2,"reset",  ips200_x_max-10 * 7, 80, 0,0,1,  pid_vparam_init, nfunc , nfunc},
+        {2,"p",      ips200_x_max-10 * 7, 20,  0,0,1,   pid_sub_p,           pid_add_p,          nfunc},  
+        {2,"i",      ips200_x_max-10 * 7, 40,  0,0,1,   pid_sub_i,           pid_add_i,          nfunc},  
+        {2,"d",      ips200_x_max-10 * 7, 60,  0,0,1,   pid_sub_d,           pid_add_d,          nfunc},  
+        {2,"reset",  ips200_x_max-10 * 7, 80, 0,0,1,    pid_vparam_init,      nfunc ,             nfunc},
         {2,"encoder_right"  ,ips200_x_max-10*7,160,0,0,0,                nfunc,nfunc,nfunc},
         {2,"encoder_left"   ,ips200_x_max-10*7,180,0,0,0,                nfunc,nfunc,nfunc},
     {1,"pid_s_param",0,40,0,0,0,nfunc,nfunc,nfunc},
@@ -166,8 +184,9 @@ MENU menu[]={
         {2,"reset_S1",     ips200_x_max-10 * 7, 220, 0,0,1,     PID2_init, nfunc , nfunc},
     {1,"CARstatus",0,60,0,0,0,nfunc,nfunc,nfunc},
 
-        {2,"threshold_up"  ,ips200_x_max-10*7,60,0,0,0,                          threshold_up_sub,threshold_up_add,nfunc},
-        {2,"threshold_down"   ,ips200_x_max-10*7,80,0,0,0,                       threshold_down_sub,threshold_down_add,nfunc},
+        {2,"threshold_up"  ,ips200_x_max-10*7,20,0,0,0,                          threshold_up_sub,threshold_up_add,nfunc},
+        {2,"threshold_down"   ,ips200_x_max-10*7,40,0,0,0,                       threshold_down_sub,threshold_down_add,nfunc},
+        {2,"beilv",         ips200_x_max-10*7,  60, 0,  0,1,sub_beilv,add_beilv,nfunc},
         {2,"speed",          ips200_x_max-10 * 7 ,100 ,0,0,0, subspeed,           addspeed,          nfunc },
         {2,"forwardsight",   ips200_x_max-10 * 7 ,120 ,0,0,0, subforwardsight,           addforwardsight,          nfunc },
         {2,"forwardsight2",   ips200_x_max-10 * 7 ,140 ,0,0,0, subforwardsight2,           addforwardsight2,          nfunc },
@@ -329,6 +348,10 @@ void update(void)
             if (strcmp(menu[i].str, "threshold_down")==0)
             {
                 menu[i].value_i=threshold_down;
+            }
+            if(strcmp(menu[i].str,"beilv")==0)
+            {
+                menu[i].value_f=beilv;
             }
 
             

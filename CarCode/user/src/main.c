@@ -32,6 +32,7 @@ extern int16 threshold_up;  //大津法阈值上限
 extern int16 threshold_down; //大津法阈值下限
 extern uint8 dis_image[MT9V03X_H][MT9V03X_W];
 
+extern float beilv;
 void all_init(void)
 {
     clock_init(SYSTEM_CLOCK_120M);
@@ -112,6 +113,10 @@ void flash_save(void)
         flash_erase_page(99,0);
         flash_write_page_from_buffer(99,0);        
         save_flag = false;
+
+        if (flash_check(99,1)){flash_erase_page(99,1);}
+        flash_buffer_clear();
+        flash_union_buffer[0].float_type = beilv;
     }
 }
 
